@@ -8,6 +8,12 @@ export const userValidator = [
     .isEmail()
     .withMessage("Please provide a valid email address"),
 
+  body("fullName")
+    .exists()
+    .withMessage("Full name is required")
+    .isLength({ min: 3 })
+    .withMessage("Please provide a valid Full Name"),
+
   body("password")
     .exists()
     .withMessage("password is required")

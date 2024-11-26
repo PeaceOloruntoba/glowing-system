@@ -28,39 +28,34 @@ export default {
     return userProfile;
   },
   register: async function (userData = {}) {
-    const { password } = userData;
+    const { fullName, email, password, role } = userData;
     const hashedPassword = await hashPassword(password);
-
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
       const user = await User.create(
-        [{ ...userData, password: hashedPassword }],
+        [{ email, password: hashedPassword }],
         { session }
       );
       const userProfile = await UserProfile.create(
         [
           {
             userId: user[0]._id,
-            ...userData,
+            email,
+            fullName,
+            roles: [role],
           },
         ],
         { session }
       );
-
-      const emailInfo = await emailUtils.sendOTPViaEmail(
-        user[0].email,
-        userProfile[0].firstName
-      );
-
+      const emailInfo = await emailUtils.sendOTPViaEmail(email, fullName);
       await session.commitTransaction();
       session.endSession();
       return {
         success: true,
         status_code: 201,
-        message: `Registeration Successful, OTP has been sent to ${emailInfo.envelope.to}`,
-        data: { email: user[0].email, id: user[0]._id },
+        message: `Registration Successful, OTP sent to ${emailInfo.envelope.to}`,
+        data: { email, id: user[0]._id },
       };
     } catch (error) {
       await session.abortTransaction();

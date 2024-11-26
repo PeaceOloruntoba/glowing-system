@@ -2,10 +2,14 @@ import asyncWrapper from "../../middlewares/asyncWrapper.js";
 import authService from "../../v1/services/auth.service.js";
 
 export const register = asyncWrapper(async (req, res, next) => {
-  const userData = req.body;
-  const result = await authService.register(userData);
+  const { fullName, email, password, role } = req.body;
+  if (!['designer', 'user'].includes(role)) {
+    throw ApiError.badRequest('Role must be either "designer" or "user"');
+  }
+  const result = await authService.register({ fullName, email, password, role });
   res.status(201).json(result);
 });
+
 
 export const login = asyncWrapper(async (req, res, next) => {
   const userData = req.body;
