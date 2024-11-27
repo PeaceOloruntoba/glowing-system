@@ -46,6 +46,10 @@ const UserProfileSchema = new Schema(
       default:
         "https://res.cloudinary.com/demmgc49v/image/upload/v1695969739/default-avatar_scnpps.jpg",
     },
+    isDesignerRegistered: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
