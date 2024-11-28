@@ -1,0 +1,48 @@
+import mongoose from "mongoose";
+
+const { Schema } = mongoose;
+
+const DesignerProfileSchema = new Schema(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    businessName: {
+      type: String,
+      required: [true, "Please provide a business name"],
+    },
+    phoneNumber: {
+      type: String,
+      required: [true, "Please provide a phone number"],
+      match: [
+        /^(0)(7|8|9){1}(0|1){1}[0-9]{8}$/,
+        "Please enter a valid Nigerian phone number",
+      ],
+    },
+    yearsOfExperience: {
+      type: Number,
+      required: [true, "Please provide your years of experience"],
+    },
+    businessAddress: {
+      type: String,
+      required: [true, "Please provide a business address"],
+    },
+    bank: {
+      type: String,
+      required: [true, "Please provide a bank name"],
+    },
+    accountNumber: {
+      type: String,
+      required: [true, "Please provide an account number"],
+      match: [/^\d{10}$/, "Please provide a valid account number"],
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+export default mongoose.model("DesignerProfile", DesignerProfileSchema);
+    
