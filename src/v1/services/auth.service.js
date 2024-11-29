@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { generateToken } from "../../config/token.js";
 import User from "../models/user.model.js";
 import UserProfile from "../models/userProfile.model.js";
+import DesignerProfile from "../models/designerProfile.model.js";
 import OTP from "../models/otp.model.js";
 import ApiError from "../../utils/apiError.js";
 import { hashPassword, validatePassword } from "../../utils/validationUtils.js";
@@ -33,10 +34,9 @@ export default {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-      const user = await User.create(
-        [{ email, password: hashedPassword }],
-        { session }
-      );
+      const user = await User.create([{ email, password: hashedPassword }], {
+        session,
+      });
       const userProfile = await UserProfile.create(
         [
           {
@@ -56,6 +56,54 @@ export default {
         status_code: 201,
         message: `Registration Successful, OTP sent to ${emailInfo.envelope.to}`,
         data: { email, id: user[0]._id },
+      };
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
+  },
+  registerDesigner: async function (userId, designerData) {
+    const {
+      businessName,
+      phoneNumber,
+      yearsOfExperience,
+      businessAddress,
+      bank,
+      accountNumber,
+    } = designerData;
+    const existingProfile = await DesignerProfile.findOne({ userId });
+    if (existingProfile) {
+      throw ApiError.badRequest("Designer has already completed registration");
+    }
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      await DesignerProfile.create(
+        [
+          {
+            userId,
+            businessName,
+            phoneNumber,
+            yearsOfExperience,
+            businessAddress,
+            bank,
+            accountNumber,
+          },
+        ],
+        { session }
+      );
+      await UserProfile.findOneAndUpdate(
+        { userId },
+        { isDesignerRegistered: true },
+        { session }
+      );
+      await session.commitTransaction();
+      session.endSession();
+      return {
+        success: true,
+        message: "Designer registration completed successfully",
       };
     } catch (error) {
       await session.abortTransaction();
