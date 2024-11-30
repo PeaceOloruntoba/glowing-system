@@ -5,6 +5,7 @@ import {
   getUser,
   login,
   register,
+  registerDesigner,
   resetPassword,
   sendOTP,
   verifyOTP,
@@ -26,5 +27,6 @@ router.route("/send-otp").post(sendOTP).all(methodNotAllowed);
 router.route("/verify-otp").post(verifyOTP).all(methodNotAllowed);
 router.route("/forgot-password").post(forgotPassword).all(methodNotAllowed);
 router.route("/reset-password").post(resetPassword).all(methodNotAllowed);
+router.route("/designer-register").post(registerDesigner).all(methodNotAllowed);
 
 export default router;
