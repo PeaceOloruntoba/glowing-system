@@ -34,7 +34,7 @@ const UserProfileSchema = new Schema(
     },
     roles: {
       type: [String],
-      enum: ["user", "vendor", "admin"],
+      enum: ["user", "designer", "admin"],
       default: ["user"],
     },
     isVerified: {
