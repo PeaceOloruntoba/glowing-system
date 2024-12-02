@@ -9,9 +9,9 @@ const UserProfileSchema = new Schema(
       ref: "User",
       required: true,
     },
-    firstName: {
+    fullName: {
       type: String,
-      required: [true, "Please provide a firstName"],
+      required: [true, "Please provide a fullName"],
     },
     email: {
       type: String,

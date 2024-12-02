@@ -29,7 +29,8 @@ export default {
     return userProfile;
   },
   register: async function (userData = {}) {
-    const { fullName, email, password, role } = userData;
+    const { fullName, email, password, role, phoneNumber } = userData;
+    console.log(fullName)
     const hashedPassword = await hashPassword(password);
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -44,6 +45,7 @@ export default {
             email,
             fullName,
             roles: [role],
+            phoneNumber,
           },
         ],
         { session }

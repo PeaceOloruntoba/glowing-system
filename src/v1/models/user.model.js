@@ -15,10 +15,6 @@ const UserSchema = new Schema(
       ],
       unique: [true, "User with this email already exists"],
     },
-    fullName: {
-      type: String,
-      required: [true, "Please provide a firstName"],
-    },
     password: {
       type: String,
       required: [true, "Please provide a password"],

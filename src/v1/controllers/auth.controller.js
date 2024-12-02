@@ -1,9 +1,11 @@
 import asyncWrapper from "../../middlewares/asyncWrapper.js";
+import ApiError from "../../utils/apiError.js";
 import authService from "../../v1/services/auth.service.js";
 
 export const register = asyncWrapper(async (req, res, next) => {
-  const { fullName, email, password, role } = req.body;
-  if (!["designer", "user"].includes(role)) {
+  const { fullName, email, password, role, phoneNumber } = req.body;
+  console.log(req.body);
+  if (!["designer", "user", "admin"].includes(role)) {
     throw ApiError.badRequest('Role must be either "designer" or "user"');
   }
   const result = await authService.register({
@@ -11,6 +13,7 @@ export const register = asyncWrapper(async (req, res, next) => {
     email,
     password,
     role,
+    phoneNumber,
   });
   res.status(201).json(result);
 });
