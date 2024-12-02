@@ -5,7 +5,7 @@ import authService from "../../v1/services/auth.service.js";
 export const register = asyncWrapper(async (req, res, next) => {
   const { fullName, email, password, role, phoneNumber } = req.body;
   console.log(req.body);
-  if (!["designer", "user", "admin"].includes(role)) {
+  if (!["designer", "user"].includes(role)) {
     throw ApiError.badRequest('Role must be either "designer" or "user"');
   }
   const result = await authService.register({

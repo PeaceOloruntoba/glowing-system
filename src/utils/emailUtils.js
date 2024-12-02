@@ -30,7 +30,7 @@ const sendEmail = async ({ to, subject, text, html, from }) => {
     });
 
     const mailOptions = {
-      from: from || "peacecodes@kunibi.com",
+      from: from || "profprincepeace@gmail.com",
       to,
       subject,
       text,
@@ -38,7 +38,7 @@ const sendEmail = async ({ to, subject, text, html, from }) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.response);
+    console.log("Email sent:", info);
     return info;
   } catch (error) {
     console.error("Error sending email:", error);
