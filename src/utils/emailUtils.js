@@ -64,6 +64,7 @@ const sendOTPViaEmail = async (email, userName) => {
     html,
   });
 };
+
 export default {
   sendEmail,
   sendOTPViaEmail,
