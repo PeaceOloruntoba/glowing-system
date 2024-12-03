@@ -43,11 +43,11 @@ const productSchema = new Schema(
       required: true,
     },
     location: {
-      type: Number,
+      type: String,
       required: true,
     },
     discountPrice: {
-      type: String,
+      type: Number,
       default: 0,
     },
   },
