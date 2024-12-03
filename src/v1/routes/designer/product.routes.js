@@ -1,35 +1,33 @@
 import express from "express";
-import methodNotAllowed from "../../middlewares/methodNotAllowed.js";
+import methodNotAllowed from "../../../middlewares/methodNotAllowed.js";
+import { isAuth } from "../../../middlewares/auth.js";
+import { productValidator } from "../../validators/product.validator.js";
+import { checkDesignerRegistration } from "../../../middlewares/designerRegistration.js";
 import {
-  forgotPassword,
-  getDesignerProfile,
-  getUser,
-  login,
-  register,
-  registerDesigner,
-  resetPassword,
-  sendOTP,
-  verifyOTP,
-} from "../controllers/auth.controller.js";
-import { isAuth } from "../../middlewares/auth.js";
-import { userValidator } from "../validators/user.validator.js";
-import { designerValidator } from "../../validators/designer.validator.js";
+  createProduct,
+  updateProduct,
+  getProducts,
+  getProductById,
+  getProductsByDesigner,
+  deleteProduct,
+} from "../../controllers/product.controller.js";
 
 const router = express.Router();
 
 router
   .route("/")
-  .get(isAuth, getUser)
-  //   .patch(auth, updateUser)
-  //   .delete(auth, deleteUser)
+  .get(getProducts)
+  .post(isAuth, checkDesignerRegistration, productValidator, createProduct)
   .all(methodNotAllowed);
 router
-  .route("/designer-profile")
-  .get(isAuth, getDesignerProfile)
-  //   .patch(auth, updateUser)
-  //   .delete(auth, deleteUser)
+  .route("/designer/:designerId")
+  .get(isAuth, getProductsByDesigner)
   .all(methodNotAllowed);
-router.route("/signup").post(userValidator, register).all(methodNotAllowed);
-router.route("/reset-password").post(resetPassword).all(methodNotAllowed);
+router
+  .route("/:productId")
+  .get(getProductById)
+  .patch(isAuth, checkDesignerRegistration, productValidator, updateProduct)
+  .delete(isAuth, checkDesignerRegistration, deleteProduct)
+  .all(methodNotAllowed);
 
 export default router;
