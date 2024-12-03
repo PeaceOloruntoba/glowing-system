@@ -11,6 +11,7 @@ import {
   getProductsByDesigner,
   deleteProduct,
 } from "../../controllers/product.controller.js";
+import { checkProductOwnership } from "../../../middlewares/productOwnership.js";
 
 const router = express.Router();
 
@@ -26,8 +27,19 @@ router
 router
   .route("/:productId")
   .get(getProductById)
-  .patch(isAuth, checkDesignerRegistration, productValidator, updateProduct)
-  .delete(isAuth, checkDesignerRegistration, deleteProduct)
+  .patch(
+    isAuth,
+    checkDesignerRegistration,
+    checkProductOwnership,
+    productValidator,
+    updateProduct
+  )
+  .delete(
+    isAuth,
+    checkDesignerRegistration,
+    checkProductOwnership,
+    deleteProduct
+  )
   .all(methodNotAllowed);
 
 export default router;
