@@ -13,7 +13,7 @@ import {
 } from "../controllers/auth.controller.js";
 import { isAuth } from "../../middlewares/auth.js";
 import { userValidator } from "../validators/user.validator.js";
-import { designerValidator } from "../validators/designer.validator.js";
+import { designerValidator } from "../../validators/designer.validator.js";
 
 const router = express.Router();
 
@@ -30,14 +30,6 @@ router
   //   .delete(auth, deleteUser)
   .all(methodNotAllowed);
 router.route("/signup").post(userValidator, register).all(methodNotAllowed);
-router.route("/signin").post(login).all(methodNotAllowed);
-router.route("/send-otp").post(sendOTP).all(methodNotAllowed);
-router.route("/verify-otp").post(verifyOTP).all(methodNotAllowed);
-router.route("/forgot-password").post(forgotPassword).all(methodNotAllowed);
 router.route("/reset-password").post(resetPassword).all(methodNotAllowed);
-router
-  .route("/designer-register")
-  .post(designerValidator, isAuth, registerDesigner)
-  .all(methodNotAllowed);
 
 export default router;
