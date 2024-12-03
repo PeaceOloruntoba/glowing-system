@@ -6,7 +6,7 @@ const productSchema = new Schema(
     category: {
       type: Number,
       required: true,
-      default: [],
+      enum: [1, 2, 3, 4],
     },
     productName: {
       type: String,
@@ -16,16 +16,12 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
-    productName: {
-      type: String,
-      required: true,
-    },
     price: {
       type: Number,
       required: true,
     },
     images: {
-      type: String,
+      type: [String],
       required: true,
       default: [],
     },
@@ -54,5 +50,10 @@ const productSchema = new Schema(
     timestamps: true,
   }
 );
+
+productSchema.pre("save", function (next) {
+  this.discountPrice = this.price - this.discount;
+  next();
+});
 
 export default mongoose.model("Product", productSchema);
