@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const otpSchema = new Schema(
+const productSchema = new Schema(
   {
     productName: {
       type: String,
       required: true,
     },
-    quantity: {
+    price: {
       type: String,
       required: true,
     },
@@ -17,4 +17,4 @@ const otpSchema = new Schema(
   }
 );
 
-export default mongoose.model("OTP", otpSchema);
+export default mongoose.model("Product", productSchema);
