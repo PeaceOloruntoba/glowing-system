@@ -10,7 +10,7 @@ import {
   getProductById,
   getProductsByDesigner,
   deleteProduct,
-} from "../controllers/product.controller.js";
+} from "../controllers/designer/product.controller.js";
 import { checkProductOwnership } from "../../middlewares/productOwnership.js";
 
 const router = express.Router();

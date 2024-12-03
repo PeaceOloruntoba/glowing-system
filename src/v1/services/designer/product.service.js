@@ -1,6 +1,6 @@
-import Product from "../models/product.model.js";
-import ApiError from "../../utils/apiError.js";
+import ApiError from "../../../utils/apiError.js";
 import uploadImagesToCloudinary from "../../../middlewares/uploadFile.js";
+import Product from "../../models/product.model.js";
 
 export default {
   createProduct: async function (designerId, productData, images) {

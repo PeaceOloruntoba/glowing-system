@@ -1,4 +1,4 @@
-import userProfile from "../v1/models/userProfile.model";
+import userProfile from "../v1/models/userProfile.model.js";
 
 export const checkDesignerRegistration = async (req, res, next) => {
   const { userId } = req.user;
