@@ -8,6 +8,11 @@ const productSchema = new Schema(
       required: true,
       enum: [1, 2, 3, 4],
     },
+    designerId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     productName: {
       type: String,
       required: true,
