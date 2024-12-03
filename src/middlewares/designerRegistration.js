@@ -1,9 +1,9 @@
 export const checkDesignerRegistration = async (req, res, next) => {
   const { userId } = req.user;
-  const userProfile = await UserProfile.findOne({ userId });
+  const designerProfile = await userProfile.findOne({ userId });
   if (
-    userProfile.roles.includes("designer") &&
-    !userProfile.isDesignerRegistered
+    designerProfile.roles.includes("designer") &&
+    !designerProfile.isDesignerRegistered
   ) {
     return res.status(403).json({
       success: false,
