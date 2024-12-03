@@ -30,7 +30,7 @@ export default {
   },
   register: async function (userData = {}) {
     const { fullName, email, password, role, phoneNumber } = userData;
-    console.log(fullName)
+    console.log(fullName);
     const hashedPassword = await hashPassword(password);
     const session = await mongoose.startSession();
     session.startTransaction();
@@ -127,7 +127,15 @@ export default {
       success: true,
       status_code: 200,
       message: "Login Successful",
-      data: { user: { email: user.email, id: user._id }, token },
+      data: {
+        user: {
+          email: user.email,
+          id: user._id,
+          roles: userProfile.roles,
+          isDesignerRegistered: userProfile.isDesignerRegistered,
+        },
+        token,
+      },
     };
   },
   getUser: async function (userId) {
@@ -140,7 +148,30 @@ export default {
         user: {
           id: userProfile.userId,
           email: userProfile.email,
-          firstName: userProfile.firstName,
+          fullName: userProfile.fullName,
+          businessName: userProfile.businessName,
+        },
+      },
+    };
+  },
+  getDesignerProfile: async function (userId) {
+    const designerProfile = await DesignerProfile.findOne({ userId });
+    if (!designerProfile) {
+      throw ApiError.notFound("Designer profile not found");
+    }
+    return {
+      success: true,
+      status_code: 200,
+      message: "Designer profile retrieved successfully",
+      data: {
+        user: {
+          id: designerProfile.userId,
+          businessName: designerProfile.businessName,
+          phoneNumber: designerProfile.phoneNumber,
+          yearsOfExperience: designerProfile.yearsOfExperience,
+          businessAddress: designerProfile.businessAddress,
+          bank: designerProfile.bank,
+          accountNumber: designerProfile.accountNumber,
         },
       },
     };
@@ -201,11 +232,12 @@ export default {
   },
   resetPassword: async function ({ email, otp, password }) {
     const user = await this.findUserByEmail(email);
+    const hashedPassword = await hashPassword(password);
     const otpExists = await OTP.findOne({ email, otp });
     if (!otpExists) {
       throw ApiError.badRequest("Invalid or Expired OTP");
     }
-    user.password = password;
+    user.password = hashedPassword;
     await user.save();
     return {
       success: true,

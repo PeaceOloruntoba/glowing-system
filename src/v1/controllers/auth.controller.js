@@ -38,6 +38,12 @@ export const getUser = asyncWrapper(async (req, res, next) => {
   res.status(200).json(result);
 });
 
+export const getDesignerProfile = asyncWrapper(async (req, res, next) => {
+  const { userId } = req.user;
+  const result = await authService.getDesignerProfile(userId);
+  res.status(200).json(result);
+});
+
 export const sendOTP = asyncWrapper(async (req, res, next) => {
   const { email } = req.body;
   const result = await authService.sendOTP({ email });
