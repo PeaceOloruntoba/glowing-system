@@ -3,9 +3,9 @@ import designerService from "../services/designer.service.js";
 export default {
   createProduct: async function (req, res, next) {
     try {
-      const designerId = req.user._id; // Assuming `req.user` contains authenticated user
+      const designerId = req.user._id;
       const productData = req.body;
-      const images = req.files?.images || []; // Assuming `images` comes from `req.files`
+      const images = req.files?.images || [];
       const product = await designerService.createProduct(designerId, productData, images);
       res.status(201).json({ success: true, message: "Product created", data: product });
     } catch (error) {
