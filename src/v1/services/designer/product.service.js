@@ -1,12 +1,17 @@
 import ApiError from "../../../utils/apiError.js";
-import uploadImagesToCloudinary from "../../../middlewares/uploadFile.js";
 import Product from "../../models/product.model.js";
 
 export default {
-  createProduct: async function (designerId, productData, images) {
-    const { category, productName, description, price, coverImage, size, location, discount } = productData;
-    const uploadedImages = await uploadImagesToCloudinary(images);
-    const uploadedCoverImage = (await uploadImagesToCloudinary([coverImage]))[0];
+  createProduct: async function (designerId, productData, images, coverImage) {
+    const {
+      category,
+      productName,
+      description,
+      price,
+      size,
+      location,
+      discount,
+    } = productData;
 
     const product = await Product.create({
       designerId,
@@ -14,16 +19,17 @@ export default {
       productName,
       description,
       price,
-      images: uploadedImages,
-      coverImage: uploadedCoverImage,
+      images, // These will already be URLs from multer's Cloudinary storage
+      coverImage, // Cloudinary URL from multer
       discount,
       size,
       location,
     });
+
     return product;
   },
 
-  updateProduct: async function (productId, productData, images) {
+  updateProduct: async function (productId, productData, images, coverImage) {
     const product = await Product.findById(productId);
     if (!product) {
       throw ApiError.notFound("Product not found");
@@ -31,9 +37,12 @@ export default {
 
     const updatedData = { ...productData };
 
-    if (images) {
-      const uploadedImages = await uploadImagesToCloudinary(images);
-      updatedData.images = uploadedImages;
+    if (images && images.length > 0) {
+      updatedData.images = images; // Replace old images if new ones are provided
+    }
+
+    if (coverImage) {
+      updatedData.coverImage = coverImage; // Update cover image if provided
     }
 
     Object.assign(product, updatedData);

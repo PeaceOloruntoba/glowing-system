@@ -2,13 +2,18 @@ import productService from "../../services/designer/product.service.js";
 
 export const createProduct = async function (req, res, next) {
   try {
-    const designerId = req.user._id;
+    const designerId = req.user.userId;
     const productData = req.body;
-    const images = req.files?.images || [];
+    const images = req.files?.images?.map((file) => file.path) || [];
+    const coverImage = req.files?.coverImage?.path || null;
+
+    console.log(req.files.coverImage)
+
     const product = await productService.createProduct(
       designerId,
       productData,
-      images
+      images,
+      coverImage
     );
     res
       .status(201)
@@ -22,11 +27,14 @@ export const updateProduct = async function (req, res, next) {
   try {
     const productId = req.params.id;
     const productData = req.body;
-    const images = req.files?.images || [];
+    const images = req.files?.images?.map((file) => file.path) || [];
+    const coverImage = req.files?.coverImage?.[0]?.path || null;
+
     const updatedProduct = await productService.updateProduct(
       productId,
       productData,
-      images
+      images,
+      coverImage
     );
     res
       .status(200)
