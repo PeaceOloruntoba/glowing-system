@@ -4,10 +4,10 @@ export const createProduct = async function (req, res, next) {
   try {
     const designerId = req.user.userId;
     const productData = req.body;
-    const images = req.files?.images?.map((file) => file.path) || [];
-    const coverImage = req.files?.coverImage?.path || null;
+    const images = req.uploadedImagesUrls?.images || [];
+    const coverImage = req.uploadedImagesUrls?.coverImage || null;
 
-    console.log(req.files.coverImage)
+    console.log(req.uploadedImagesUrls)
 
     const product = await productService.createProduct(
       designerId,
