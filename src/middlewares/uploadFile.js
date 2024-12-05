@@ -58,6 +58,10 @@ const productImageUpload = async (req, res, next) => {
 
     // Attach uploaded image URLs to the request for further use (e.g., creating a product)
     req.uploadedImagesUrls = uploadedImagesUrls;
+    console.log(req.uploadedImagesUrls);
+    console.log(uploadedImagesUrls);
+    
+    
 
     // Continue to the next middleware or route handler
     next();

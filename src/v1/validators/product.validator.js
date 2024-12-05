@@ -47,24 +47,24 @@ export const productValidator = [
     .isString()
     .withMessage("Location must be a string"),
 
-  check("images")
-    .custom((value, { req }) => {
-      if (!req.files || !req.files.images || req.files.images.length === 0) {
-        throw new Error("At least one product image is required");
-      }
-      if (req.files.images.length > 5) {
-        throw new Error("You can upload up to 5 images only");
-      }
-      return true;
-    }),
+  // check("images")
+  //   .custom((value, { req }) => {
+  //     if (!req.files || !req.files.images || req.files.images.length === 0) {
+  //       throw new Error("At least one product image is required");
+  //     }
+  //     if (req.files.images.length > 5) {
+  //       throw new Error("You can upload up to 5 images only");
+  //     }
+  //     return true;
+  //   }),
 
-  check("coverImage")
-    .custom((value, { req }) => {
-      if (!req.files || !req.files.coverImage) {
-        throw new Error("Cover Image is required");
-      }
-      return true;
-    }),
+  // check("coverImage")
+  //   .custom((value, { req }) => {
+  //     if (!req.files || !req.files.coverImage) {
+  //       throw new Error("Cover Image is required");
+  //     }
+  //     return true;
+  //   }),
 
   handleValidationErrors,
 ];
