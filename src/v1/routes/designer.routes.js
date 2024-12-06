@@ -22,7 +22,7 @@ router
   .post(isAuth, checkDesignerRegistration, productValidator, productImageUpload, createProduct)
   .all(methodNotAllowed);
 router
-  .route("/product/:designerId")
+  .route("/designerProduct/:designerId")
   .get(isAuth, getProductsByDesigner)
   .all(methodNotAllowed);
 router
