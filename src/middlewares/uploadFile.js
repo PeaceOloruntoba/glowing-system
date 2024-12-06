@@ -1,17 +1,17 @@
 import cloudinary from "../config/cloudinaryConfig.js";
 
 const productImageUpload = async (req, res, next) => {
-  
   try {
     const uploadedImagesUrls = {};
-
+    console.log(req.files);
+    
     // Handle multiple images field (images) if present
     if (req.files && req.files.images) {
       const imagesArray = req.files.images;
 
       const imageUploadPromises = Array.isArray(imagesArray)
         ? imagesArray.map((file) =>
-            cloudinary.uploader.upload(file.path, {
+            cloudinary.uploader.upload(file.tempFilePath, {
               folder: "kunibi/products",
             })
           )
@@ -32,12 +32,12 @@ const productImageUpload = async (req, res, next) => {
 
       const coverImageUpload = Array.isArray(coverImageFile)
         ? coverImageFile.map((file) =>
-            cloudinary.uploader.upload(file.path, {
+            cloudinary.uploader.upload(file.tempFilePath, {
               folder: "kunibi/products",
             })
           )
         : [
-            cloudinary.uploader.upload(coverImageFile.path, {
+            cloudinary.uploader.upload(coverImageFile.tempFilePath, {
               folder: "kunibi/products",
             }),
           ];
