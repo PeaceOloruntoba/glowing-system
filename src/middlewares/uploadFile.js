@@ -44,7 +44,7 @@ const productImageUpload = async (req, res, next) => {
 
     // If no images were provided, return an error
     if (!uploadedImagesUrls.images && !uploadedImagesUrls.coverImage) {
-      return res.status(400).json({ error: "No images provided for upload." });
+      console.log("No image uploaded");
     }
 
     // Attach uploaded image URLs to the request for further use (e.g., creating a product)
