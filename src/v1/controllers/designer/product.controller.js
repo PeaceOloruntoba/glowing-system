@@ -74,7 +74,7 @@ export const getProductsByDesigner = async function (req, res, next) {
 
 export const deleteProduct = async function (req, res, next) {
   try {
-    const productId = req.params.id;
+    const productId = req.params.productId;
     await productService.deleteProduct(productId);
     res.status(200).json({ success: true, message: "Product deleted" });
   } catch (error) {
