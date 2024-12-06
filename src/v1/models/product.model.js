@@ -31,8 +31,9 @@ const productSchema = new Schema(
       default: [],
     },
     coverImage: {
-      type: String,
+      type: [String],
       required: true,
+      default: [],
     },
     discount: {
       type: Number,
