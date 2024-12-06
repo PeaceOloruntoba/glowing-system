@@ -12,13 +12,14 @@ import {
   deleteProduct,
 } from "../controllers/designer/product.controller.js";
 import { checkProductOwnership } from "../../middlewares/productOwnership.js";
+import productImageUpload from "../../middlewares/uploadFile.js";
 
 const router = express.Router();
 
 router
   .route("/product")
   .get(getProducts)
-  .post(isAuth, checkDesignerRegistration, productValidator, createProduct)
+  .post(isAuth, checkDesignerRegistration, productValidator, productImageUpload, createProduct)
   .all(methodNotAllowed);
 router
   .route("/product/:designerId")
