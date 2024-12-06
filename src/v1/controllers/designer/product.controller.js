@@ -6,9 +6,6 @@ export const createProduct = async function (req, res, next) {
     const productData = req.body;
     const images = req.uploadedImagesUrls?.images || [];
     const coverImage = req.uploadedImagesUrls?.coverImage || null;
-
-    console.log(req.uploadedImagesUrls)
-
     const product = await productService.createProduct(
       designerId,
       productData,
