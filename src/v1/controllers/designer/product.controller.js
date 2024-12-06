@@ -22,10 +22,10 @@ export const createProduct = async function (req, res, next) {
 
 export const updateProduct = async function (req, res, next) {
   try {
-    const productId = req.params.id;
+    const productId = req.params.productId;
     const productData = req.body;
-    const images = req.files?.images?.map((file) => file.path) || [];
-    const coverImage = req.files?.coverImage?.[0]?.path || null;
+    const images = req.uploadedImagesUrls?.images || [];
+    const coverImage = req.uploadedImagesUrls?.coverImage || null;
 
     const updatedProduct = await productService.updateProduct(
       productId,
@@ -33,13 +33,11 @@ export const updateProduct = async function (req, res, next) {
       images,
       coverImage
     );
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Product updated",
-        data: updatedProduct,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Product updated",
+      data: updatedProduct,
+    });
   } catch (error) {
     next(error);
   }

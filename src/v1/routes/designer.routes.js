@@ -32,7 +32,7 @@ router
     isAuth,
     checkDesignerRegistration,
     checkProductOwnership,
-    productValidator,
+    productImageUpload,
     updateProduct
   )
   .delete(
