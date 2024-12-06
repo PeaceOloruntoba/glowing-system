@@ -8,6 +8,7 @@ const isAuth = asyncWrapper(async (req, res, next) => {
     throw ApiError.unauthorized("No Token Provided");
   }
   const token = authHeader.split(" ")[1];
+  console.log(token);
   const payload = verifyToken(token);
   req.user = payload;
   next();
