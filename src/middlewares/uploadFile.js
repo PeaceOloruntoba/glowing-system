@@ -3,12 +3,9 @@ import cloudinary from "../config/cloudinaryConfig.js";
 const productImageUpload = async (req, res, next) => {
   try {
     const uploadedImagesUrls = {};
-    console.log(req.files);
-    
     // Handle multiple images field (images) if present
     if (req.files && req.files.images) {
       const imagesArray = req.files.images;
-
       const imageUploadPromises = Array.isArray(imagesArray)
         ? imagesArray.map((file) =>
             cloudinary.uploader.upload(file.tempFilePath, {
@@ -22,14 +19,12 @@ const productImageUpload = async (req, res, next) => {
           ];
 
       const uploadedImages = await Promise.all(imageUploadPromises);
-
       uploadedImagesUrls.images = uploadedImages.map((file) => file.secure_url);
     }
 
     // Handle single cover image field (coverImage) if present
     if (req.files && req.files.coverImage) {
       const coverImageFile = req.files.coverImage;
-
       const coverImageUpload = Array.isArray(coverImageFile)
         ? coverImageFile.map((file) =>
             cloudinary.uploader.upload(file.tempFilePath, {
@@ -41,32 +36,27 @@ const productImageUpload = async (req, res, next) => {
               folder: "kunibi/products",
             }),
           ];
-
       const uploadedCoverImage = await Promise.all(coverImageUpload);
-
       uploadedImagesUrls.coverImage = uploadedCoverImage.map(
         (file) => file.secure_url
       );
     }
 
     // If no images were provided, return an error
-    if (
-      !uploadedImagesUrls.images &&
-      !uploadedImagesUrls.coverImage
-    ) {
+    if (!uploadedImagesUrls.images && !uploadedImagesUrls.coverImage) {
       return res.status(400).json({ error: "No images provided for upload." });
     }
 
     // Attach uploaded image URLs to the request for further use (e.g., creating a product)
     req.uploadedImagesUrls = uploadedImagesUrls;
-    
-    
 
     // Continue to the next middleware or route handler
     next();
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: "Error uploading images to Cloudinary." });
+    return res
+      .status(500)
+      .json({ error: "Error uploading images to Cloudinary." });
   }
 };
 
