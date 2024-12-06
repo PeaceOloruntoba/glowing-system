@@ -13,7 +13,6 @@ import {
 } from "../../controllers/designer/product.controller.js";
 import { checkProductOwnership } from "../../../middlewares/productOwnership.js";
 import productImageUpload from "../../../middlewares/uploadFile.js";
-import multerUpload from "../../../middlewares/multerUpload.js";
 
 const router = express.Router();
 
@@ -24,7 +23,6 @@ router
     isAuth,
     checkDesignerRegistration,
     productValidator,
-    multerUpload,
     productImageUpload,
     createProduct
   )
