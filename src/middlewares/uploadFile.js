@@ -1,6 +1,7 @@
 import cloudinary from "../config/cloudinaryConfig.js";
 
 const productImageUpload = async (req, res, next) => {
+  
   try {
     const uploadedImagesUrls = {};
 
@@ -58,8 +59,6 @@ const productImageUpload = async (req, res, next) => {
 
     // Attach uploaded image URLs to the request for further use (e.g., creating a product)
     req.uploadedImagesUrls = uploadedImagesUrls;
-    console.log(req.uploadedImagesUrls);
-    console.log(uploadedImagesUrls);
     
     
 
