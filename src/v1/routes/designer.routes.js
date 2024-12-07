@@ -13,13 +13,23 @@ import {
 } from "../controllers/designer/product.controller.js";
 import { checkProductOwnership } from "../../middlewares/productOwnership.js";
 import productImageUpload from "../../middlewares/uploadFile.js";
+import {
+  createClient,
+  getAllClients,
+} from "../controllers/designer/client.controller.js";
 
 const router = express.Router();
 
 router
   .route("/product")
   .get(getProducts)
-  .post(isAuth, checkDesignerRegistration, productValidator, productImageUpload, createProduct)
+  .post(
+    isAuth,
+    checkDesignerRegistration,
+    productValidator,
+    productImageUpload,
+    createProduct
+  )
   .all(methodNotAllowed);
 router
   .route("/designerProduct/:designerId")
@@ -41,6 +51,11 @@ router
     checkProductOwnership,
     deleteProduct
   )
+  .all(methodNotAllowed);
+router
+  .route("/client")
+  .get(getAllClients)
+  .post(isAuth, checkDesignerRegistration, createClient)
   .all(methodNotAllowed);
 
 export default router;

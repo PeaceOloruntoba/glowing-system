@@ -1,5 +1,5 @@
-import Client from "../models/client.model.js";
-import ApiError from "../utils/ApiError.js";
+import Client from "../../models/client.model.js";
+import ApiError from "../../../utils/apiError.js";
 
 // Create a new client
 export const createClient = async (data) => {
