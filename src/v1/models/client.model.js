@@ -6,7 +6,6 @@ const measurementSchema = new Schema(
     name: {
       type: String,
       required: true,
-      trim: true,
     },
     value: {
       type: Number,
