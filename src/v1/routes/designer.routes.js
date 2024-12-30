@@ -17,6 +17,7 @@ import {
   createClient,
   getAllClients,
 } from "../controllers/designer/client.controller.js";
+import { clientValidator } from "../validators/client.validator.js";
 
 const router = express.Router();
 
@@ -55,7 +56,7 @@ router
 router
   .route("/client")
   .get(getAllClients)
-  .post(isAuth, checkDesignerRegistration, createClient)
+  .post(isAuth, checkDesignerRegistration, clientValidator, createClient)
   .all(methodNotAllowed);
 
 export default router;
