@@ -55,7 +55,7 @@ router
   .all(methodNotAllowed);
 router
   .route("/client")
-  .get(getAllClients)
+  .get(isAuth, getAllClients)
   .post(isAuth, checkDesignerRegistration, clientValidator, createClient)
   .all(methodNotAllowed);
 
