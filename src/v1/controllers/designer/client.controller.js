@@ -58,7 +58,7 @@ export const updateClient = async (req, res) => {
 // Get all clients for the logged-in designer
 export const getAllClients = async (req, res) => {
   try {
-    const designerId = req.user.userId; // Get logged-in designer's ID
+    const designerId = req.user.userId;
     const clients = await clientService.getAllClients(designerId);
 
     return res
@@ -74,8 +74,7 @@ export const getAllClients = async (req, res) => {
 export const getClientById = async (req, res) => {
   try {
     const { id } = req.params;
-    const designerId = req.user.userId; // Get logged-in designer's ID
-
+    const designerId = req.user.userId;
     const client = await clientService.getClientById(id, designerId);
 
     return res
