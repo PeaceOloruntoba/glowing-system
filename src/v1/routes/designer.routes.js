@@ -58,5 +58,10 @@ router
   .get(isAuth, getAllClients)
   .post(isAuth, checkDesignerRegistration, clientValidator, createClient)
   .all(methodNotAllowed);
+  router
+    .route("/client/:clientId")
+    .get(isAuth, getClientById)
+    .post(isAuth, checkDesignerRegistration, clientValidator, createClient)
+    .all(methodNotAllowed);
 
 export default router;
