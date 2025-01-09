@@ -16,6 +16,7 @@ import productImageUpload from "../../middlewares/uploadFile.js";
 import {
   createClient,
   getAllClients,
+  getClientById,
 } from "../controllers/designer/client.controller.js";
 import { clientValidator } from "../validators/client.validator.js";
 
