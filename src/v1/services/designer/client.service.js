@@ -39,13 +39,11 @@ export const getAllClients = async (designerId) => {
 // Get a single client by ID for a specific designer
 export const getClientById = async (id, designerId) => {
   const client = await Client.findOne({ _id: id, designerId }).populate(
-    "designerId",
     "name email"
   );
   if (!client) {
-    throw ApiError.notFound("Client not found or unauthorized access.");
+    throw ApiError.notFound("Client not found.");
   }
-
   return client;
 };
 
