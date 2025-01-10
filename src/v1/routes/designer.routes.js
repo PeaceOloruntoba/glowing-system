@@ -15,6 +15,7 @@ import { checkProductOwnership } from "../../middlewares/productOwnership.js";
 import productImageUpload from "../../middlewares/uploadFile.js";
 import {
   createClient,
+  deleteClient,
   getAllClients,
   getClientById,
   updateClient,
@@ -62,8 +63,9 @@ router
   .all(methodNotAllowed);
 router
   .route("/client/:clientId")
-  .get(isAuth, getClientById)
+  .get(isAuth, checkDesignerRegistration, getClientById)
   .patch(isAuth, checkDesignerRegistration, updateClient)
+  .delete(isAuth, checkDesignerRegistration, deleteClient)
   .all(methodNotAllowed);
 
 export default router;
