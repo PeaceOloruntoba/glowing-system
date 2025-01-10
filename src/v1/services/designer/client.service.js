@@ -30,7 +30,7 @@ export const updateClient = async (clientId, updates, designerId) => {
 // Get all clients for a specific designer
 export const getAllClients = async (designerId) => {
   try {
-    return await Client.find({ designerId }).populate("designerId");
+    return await Client.find({ designerId }).populate("designerId", "email");
   } catch (error) {
     throw ApiError.internalServerError("Error retrieving clients.");
   }
