@@ -12,8 +12,8 @@ export const createClient = async (data) => {
 };
 
 // Update an existing client
-export const updateClient = async (id, updates, designerId) => {
-  const client = await Client.findById(id);
+export const updateClient = async (clientId, updates, designerId) => {
+  const client = await Client.findById(clientId);
   if (!client) {
     throw ApiError.notFound("Client not found.");
   }
@@ -37,8 +37,8 @@ export const getAllClients = async (designerId) => {
 };
 
 // Get a single client by ID for a specific designer
-export const getClientById = async (id, designerId) => {
-  const client = await Client.findOne({ _id: id, designerId }).populate(
+export const getClientById = async (clientId, designerId) => {
+  const client = await Client.findOne({ _id: clientId, designerId }).populate(
     "name email"
   );
   if (!client) {

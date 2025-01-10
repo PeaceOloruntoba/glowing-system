@@ -34,12 +34,12 @@ export const createClient = async (req, res) => {
 // Update an existing client
 export const updateClient = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { clientId } = req.params;
     const designerId = req.user.userId; // Get logged-in designer's ID
     const updates = req.body;
 
     const updatedClient = await clientService.updateClient(
-      id,
+      clientId,
       updates,
       designerId
     );
@@ -73,9 +73,9 @@ export const getAllClients = async (req, res) => {
 // Get a single client by ID for the logged-in designer
 export const getClientById = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { clientId } = req.params;
     const designerId = req.user.userId;
-    const client = await clientService.getClientById(id, designerId);
+    const client = await clientService.getClientById(clientId, designerId);
 
     return res
       .status(200)

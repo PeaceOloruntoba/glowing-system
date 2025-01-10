@@ -17,6 +17,7 @@ import {
   createClient,
   getAllClients,
   getClientById,
+  updateClient,
 } from "../controllers/designer/client.controller.js";
 import { clientValidator } from "../validators/client.validator.js";
 
@@ -59,10 +60,10 @@ router
   .get(isAuth, getAllClients)
   .post(isAuth, checkDesignerRegistration, clientValidator, createClient)
   .all(methodNotAllowed);
-  router
-    .route("/client/:clientId")
-    .get(isAuth, getClientById)
-    .post(isAuth, checkDesignerRegistration, clientValidator, createClient)
-    .all(methodNotAllowed);
+router
+  .route("/client/:clientId")
+  .get(isAuth, getClientById)
+  .patch(isAuth, checkDesignerRegistration, updateClient)
+  .all(methodNotAllowed);
 
 export default router;
