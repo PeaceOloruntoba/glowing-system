@@ -67,5 +67,14 @@ router
   .patch(isAuth, checkDesignerRegistration, updateClient)
   .delete(isAuth, checkDesignerRegistration, deleteClient)
   .all(methodNotAllowed);
+router
+  .route("/booking")
+  .get(isAuth, checkDesignerRegistration)
+  .all(methodNotAllowed);
+router
+  .route("/booking/:bookingId")
+  .get(isAuth, checkDesignerRegistration)
+  .patch(isAuth, checkDesignerRegistration)
+  .all(methodNotAllowed);
 
 export default router;
