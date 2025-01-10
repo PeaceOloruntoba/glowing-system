@@ -60,6 +60,6 @@ export const deleteClient = async (clientId, designerId) => {
       "You are not authorized to delete this client."
     );
   }
-  const deleteCl = await client.delete();
+  const deleteCl = await Client.findByIdAndDelete(clientId);
   return deleteCl;
 };
