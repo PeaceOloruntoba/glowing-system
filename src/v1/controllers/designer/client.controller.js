@@ -91,9 +91,9 @@ export const getClientById = async (req, res) => {
 // Delete a client
 export const deleteClient = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { clientId } = req.params;
     const designerId = req.user.userId; // Get logged-in designer's ID
-    await clientService.deleteClient(id, designerId);
+    await clientService.deleteClient(clientId, designerId);
     return res.status(200).json({ message: "Client deleted successfully." });
   } catch (error) {
     console.error(error);

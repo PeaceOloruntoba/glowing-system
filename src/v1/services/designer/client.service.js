@@ -49,9 +49,9 @@ export const getClientById = async (id, designerId) => {
 };
 
 // Delete a client
-export const deleteClient = async (id, designerId) => {
+export const deleteClient = async (clientId, designerId) => {
   // Step 1: Check if the client exists
-  const client = await Client.findById(id);
+  const client = await Client.findById(clientId);
   if (!client) {
     throw ApiError.notFound("Client not found.");
   }
@@ -60,6 +60,6 @@ export const deleteClient = async (id, designerId) => {
       "You are not authorized to delete this client."
     );
   }
-  const deleteCl = await client.remove();
+  const deleteCl = await client.delete();
   return deleteCl;
 };
