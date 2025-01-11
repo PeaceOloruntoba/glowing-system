@@ -18,7 +18,7 @@ export const updateBooking = async (clientId, updates, designerId) => {
 };
 
 // Get all bookings for a specific designer
-export const getAllBooking = async (designerId) => {
+export const getAllBookings = async (designerId) => {
   try {
     return await Booking.find({ designerId }).populate("designerId", "email");
   } catch (error) {
