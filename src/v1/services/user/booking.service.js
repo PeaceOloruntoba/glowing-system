@@ -40,7 +40,7 @@ export const getAllBookings = async (userId) => {
 export const getBookingById = async (id, userId) => {
   const booking = await Booking.findOne({ _id: id, userId }).populate(
     "userId",
-    "email"
+    "email fullName"
   );
   if (!booking) {
     throw ApiError.notFound("Booking not found.");

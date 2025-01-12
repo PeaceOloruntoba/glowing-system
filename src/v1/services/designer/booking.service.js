@@ -2,7 +2,7 @@ import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
 
 // Update booking
-export const updateBooking = async (clientId, updates, designerId) => {
+export const updateBooking = async (bookingId, updates, designerId) => {
   const booking = await Booking.findById(bookingId);
   if (!booking) {
     throw ApiError.notFound("Booking not found.");
