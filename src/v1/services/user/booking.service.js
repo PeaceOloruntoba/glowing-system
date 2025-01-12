@@ -1,65 +1,65 @@
-import Client from "../../models/client.model.js";
+import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
 
-// Create a new client
-export const createClient = async (data) => {
+// Create a new booking
+export const createBooking = async (data) => {
   try {
-    const client = new Client(data);
-    return await client.save();
+    const booking = new Booking(data);
+    return await booking.save();
   } catch (error) {
-    throw ApiError.internalServerError("Error creating client.");
+    throw ApiError.internalServerError("Error creating booking.");
   }
 };
 
-// Update an existing client
-export const updateClient = async (clientId, updates, designerId) => {
-  const client = await Client.findById(clientId);
-  if (!client) {
-    throw ApiError.notFound("Client not found.");
+// Update booking
+export const updateBooking = async (bookingId, updates, userId) => {
+  const booking = await Booking.findById(bookingId);
+  if (!booking) {
+    throw ApiError.notFound("Booking not found.");
   }
-  if (client.designerId.toString() !== designerId.toString()) {
+  if (booking.userId.toString() !== userId.toString()) {
     throw ApiError.unauthorized(
-      "You are not authorized to update this client."
+      "You are not authorized to update this booking."
     );
   }
-  Object.assign(client, updates);
-  const updateCl = await client.save();
-  return updateCl;
+  Object.assign(booking, updates);
+  const updateBook = await booking.save();
+  return updateBook;
 };
 
-// Get all clients for a specific designer
-export const getAllClients = async (designerId) => {
+// Get all bookings for a specific user
+export const getAllBookings = async (userId) => {
   try {
-    return await Client.find({ designerId }).populate("designerId", "email");
+    return await Booking.find({ userId }).populate("userId", "email");
   } catch (error) {
-    throw ApiError.internalServerError("Error retrieving clients.");
+    throw ApiError.internalServerError("Error retrieving bookings.");
   }
 };
 
-// Get a single client by ID for a specific designer
-export const getClientById = async (id, designerId) => {
-  const client = await Client.findOne({ _id: id, designerId }).populate(
-    "designerId",
+// Get a single booking by ID for a specific user
+export const getBookingById = async (id, userId) => {
+  const booking = await Booking.findOne({ _id: id, userId }).populate(
+    "userId",
     "email"
   );
-  if (!client) {
-    throw ApiError.notFound("Client not found.");
+  if (!booking) {
+    throw ApiError.notFound("Booking not found.");
   }
-  return client;
+  return booking;
 };
 
-// Delete a client
-export const deleteClient = async (clientId, designerId) => {
-  // Step 1: Check if the client exists
-  const client = await Client.findById(clientId);
-  if (!client) {
-    throw ApiError.notFound("Client not found.");
+// Delete a booking
+export const deleteBooking = async (bookingId, userId) => {
+  // Step 1: Check if the booking exists
+  const booking = await Booking.findById(bookingId);
+  if (!booking) {
+    throw ApiError.notFound("Booking not found.");
   }
-  if (client.designerId.toString() !== designerId.toString()) {
+  if (booking.userId.toString() !== userId.toString()) {
     throw ApiError.unauthorized(
-      "You are not authorized to delete this client."
+      "You are not authorized to delete this booking."
     );
   }
-  const deleteCl = await Client.findByIdAndDelete(clientId);
-  return deleteCl;
+  const deleteBook = await Booking.findByIdAndDelete(bookingId);
+  return deleteBook;
 };
