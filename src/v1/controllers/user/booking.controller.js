@@ -3,23 +3,12 @@ import * as clientService from "../../services/designer/client.service.js";
 // Create a new client
 export const createClient = async (req, res) => {
   try {
-    const { clientName, measurements } = req.body;
-    const designerId = req.user.userId; // Get logged-in designer's ID
-
-    if (
-      !clientName ||
-      !measurements ||
-      !Array.isArray(measurements) ||
-      measurements.length === 0
-    ) {
-      return res.status(400).json({
-        message: "Client name and at least one measurement are required.",
-      });
-    }
-
+   const status = "pending"
+    const userId = req.user.userId;
     const newClient = await clientService.createClient({
       ...req.body,
-      designerId,
+      userId,
+      status,
     });
 
     return res
@@ -31,60 +20,60 @@ export const createClient = async (req, res) => {
   }
 };
 
-// Update an existing client
-export const updateClient = async (req, res) => {
+// Update an existing booking
+export const updateBooking = async (req, res) => {
   try {
-    const { clientId } = req.params;
-    const designerId = req.user.userId; // Get logged-in designer's ID
+    const { bookingId } = req.params;
+    const userId = req.user.userId;
     const updates = req.body;
 
-    const updatedClient = await clientService.updateClient(
-      clientId,
+    const updatedBooking = await bookingService.updateBooking(
+      bookingId,
       updates,
-      designerId
+      userId
     );
 
     return res
       .status(200)
-      .json({ message: "Client updated successfully.", data: updatedClient });
+      .json({ message: "Booking updated successfully.", data: updatedBooking });
   } catch (error) {
     console.error(error);
     return res
       .status(error.statusCode || 500)
-      .json({ message: error.message || "Error updating client." });
+      .json({ message: error.message || "Error updating booking." });
   }
 };
 
-// Get all clients for the logged-in designer
-export const getAllClients = async (req, res) => {
+// Get all bookings for the logged-in designer
+export const getAllBookings = async (req, res) => {
   try {
-    const designerId = req.user.userId;
-    const clients = await clientService.getAllClients(designerId);
+    const userId = req.user.userId;
+    const bookings = await bookingService.getAllBookings(userId);
 
     return res
       .status(200)
-      .json({ message: "Clients retrieved successfully.", data: clients });
+      .json({ message: "Bookings retrieved successfully.", data: bookings });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error retrieving clients." });
+    return res.status(500).json({ message: "Error retrieving bookings." });
   }
 };
 
-// Get a single client by ID for the logged-in designer
-export const getClientById = async (req, res) => {
+// Get a single booking by ID for the logged-in designer
+export const getBookingById = async (req, res) => {
   try {
-    const { clientId } = req.params;
-    const designerId = req.user.userId;
-    const client = await clientService.getClientById(clientId, designerId);
+    const { bookingId } = req.params;
+    const userId = req.user.userId;
+    const booking = await bookingService.getBookingById(bookingId, userId);
 
     return res
       .status(200)
-      .json({ message: "Client retrieved successfully.", data: client });
+      .json({ message: "Booking retrieved successfully.", data: booking });
   } catch (error) {
     console.error(error);
     return res
       .status(error.statusCode || 500)
-      .json({ message: error.message || "Error retrieving client." });
+      .json({ message: error.message || "Error retrieving booking." });
   }
 };
 
@@ -92,8 +81,8 @@ export const getClientById = async (req, res) => {
 export const deleteClient = async (req, res) => {
   try {
     const { clientId } = req.params;
-    const designerId = req.user.userId; // Get logged-in designer's ID
-    await clientService.deleteClient(clientId, designerId);
+    const userId = req.user.userId; // Get logged-in designer's ID
+    await clientService.deleteClient(clientId, userId);
     return res.status(200).json({ message: "Client deleted successfully." });
   } catch (error) {
     console.error(error);
