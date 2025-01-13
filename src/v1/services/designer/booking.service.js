@@ -23,7 +23,6 @@ export const updateBooking = async (bookingId, updates, designerId) => {
   return await booking.save();
 };
 
-
 // Get all bookings for a specific designer
 export const getAllBookings = async (designerId) => {
   try {
@@ -35,7 +34,6 @@ export const getAllBookings = async (designerId) => {
     throw ApiError.internalServerError("Error retrieving bookings.");
   }
 };
-
 
 // Get a single booking by ID for a specific designer
 export const getBookingById = async (id, designerId) => {
