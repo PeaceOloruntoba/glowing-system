@@ -12,10 +12,17 @@ export const updateBooking = async (bookingId, updates, designerId) => {
       "You are not authorized to update this booking."
     );
   }
-  Object.assign(booking, updates);
-  const updateBook = await booking.save();
-  return updateBook;
+  const restrictedStatuses = ["paid", "cancelled", "delivered"];
+  if (updates.status && restrictedStatuses.includes(updates.status)) {
+    throw ApiError.forbidden(
+      `You are not allowed to set status to '${updates.status}'.`
+    );
+  }
+  booking.status = updates.status || booking.status;
+
+  return await booking.save();
 };
+
 
 // Get all bookings for a specific designer
 export const getAllBookings = async (designerId) => {
