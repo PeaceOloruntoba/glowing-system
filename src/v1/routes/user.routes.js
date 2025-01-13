@@ -8,7 +8,7 @@ const router = express.Router();
 router
   .route("/booking")
   .post(isAuth, createBooking)
-  .get(isAuth, checkDesignerRegistration)
+  .get(isAuth, )
   .all(methodNotAllowed);
 router
   .route("/booking/:bookingId")
