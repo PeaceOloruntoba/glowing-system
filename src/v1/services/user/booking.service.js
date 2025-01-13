@@ -71,16 +71,16 @@ export const getBookingById = async (id, userId) => {
 
 // Delete a booking
 export const deleteBooking = async (bookingId, userId) => {
-  // Step 1: Check if the booking exists
   const booking = await Booking.findById(bookingId);
   if (!booking) {
     throw ApiError.notFound("Booking not found.");
   }
+
   if (booking.userId.toString() !== userId.toString()) {
     throw ApiError.unauthorized(
       "You are not authorized to delete this booking."
     );
   }
-  const deleteBook = await Booking.findByIdAndDelete(bookingId);
-  return deleteBook;
+  return await Booking.findByIdAndDelete(bookingId);
 };
+
