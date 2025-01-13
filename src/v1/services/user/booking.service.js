@@ -83,4 +83,3 @@ export const deleteBooking = async (bookingId, userId) => {
   }
   return await Booking.findByIdAndDelete(bookingId);
 };
-
