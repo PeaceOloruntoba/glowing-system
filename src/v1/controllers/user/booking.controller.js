@@ -1,7 +1,7 @@
 import * as clientService from "../../services/designer/client.service.js";
 
 // Create a new client
-export const createClient = async (req, res) => {
+export const createBooking = async (req, res) => {
   try {
    const status = "pending"
     const userId = req.user.userId;
