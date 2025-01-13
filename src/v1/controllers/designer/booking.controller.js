@@ -13,9 +13,10 @@ export const updateBooking = async (req, res) => {
       designerId
     );
 
-    return res
-      .status(200)
-      .json({ message: "Booking updated successfully.", data: updatedBooking });
+    return res.status(200).json({
+      message: "Booking updated successfully.",
+      data: updatedBooking,
+    });
   } catch (error) {
     console.error(error);
     return res
@@ -30,9 +31,10 @@ export const getAllBookings = async (req, res) => {
     const designerId = req.user.userId;
     const bookings = await bookingService.getAllBookings(designerId);
 
-    return res
-      .status(200)
-      .json({ message: "Bookings retrieved successfully.", data: bookings });
+    return res.status(200).json({
+      message: "Bookings retrieved successfully.",
+      data: bookings,
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error retrieving bookings." });
@@ -44,11 +46,13 @@ export const getBookingById = async (req, res) => {
   try {
     const { bookingId } = req.params;
     const designerId = req.user.userId;
+
     const booking = await bookingService.getBookingById(bookingId, designerId);
 
-    return res
-      .status(200)
-      .json({ message: "Booking retrieved successfully.", data: booking });
+    return res.status(200).json({
+      message: "Booking retrieved successfully.",
+      data: booking,
+    });
   } catch (error) {
     console.error(error);
     return res
