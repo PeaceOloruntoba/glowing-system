@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const UserProfileSchema = new Schema(
+const BookingSchema = new Schema(
   {
     productId: {
       type: Schema.Types.ObjectId,
@@ -33,4 +33,4 @@ const UserProfileSchema = new Schema(
   }
 );
 
-export default mongoose.model("UserProfile", UserProfileSchema);
+export default mongoose.model("Booking", BookingSchema);
