@@ -11,13 +11,11 @@ export const initializePayment = async (email, amount, metadata) => {
       Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
       "Content-Type": "application/json",
     };
-
     const payload = {
       email,
       amount: amount * 100, // Convert amount to kobo
       metadata, // Accept metadata to identify the transaction (bookingId or orderId)
     };
-
     const response = await axios.post(url, payload, { headers });
     return response.data; // Contains the authorization_url and other details
   } catch (error) {
@@ -32,7 +30,6 @@ export const verifyPayment = async (reference) => {
     const headers = {
       Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
     };
-
     const response = await axios.get(url, { headers });
     return response.data;
   } catch (error) {
@@ -43,7 +40,6 @@ export const verifyPayment = async (reference) => {
 // Common payment handler function that can be used for both bookings and orders
 export const handlePayment = async (type, entityId, reference) => {
   let entity;
-
   if (type === "booking") {
     entity = await Booking.findById(entityId);
   } else if (type === "order") {
@@ -51,7 +47,6 @@ export const handlePayment = async (type, entityId, reference) => {
   } else {
     throw ApiError.badRequest("Invalid payment type.");
   }
-
   if (!entity)
     throw ApiError.notFound(
       `${type.charAt(0).toUpperCase() + type.slice(1)} not found.`
@@ -62,9 +57,7 @@ export const handlePayment = async (type, entityId, reference) => {
         type.charAt(0).toUpperCase() + type.slice(1)
       } has already been paid for.`
     );
-
   const verificationResult = await verifyPayment(reference);
-
   if (
     verificationResult.status &&
     verificationResult.data.status === "success"
