@@ -24,12 +24,9 @@ export const updateBooking = async (bookingId, updates, designerId) => {
 };
 
 // Get all bookings for a specific designer
-export const getAllBookings = async (designerId) => {
+export const getAllBookings = async (userId) => {
   try {
-    return await Booking.find({ designerId }).populate(
-      "userId",
-      "email fullName"
-    );
+    return await Booking.find({userId});
   } catch (error) {
     throw ApiError.internalServerError("Error retrieving bookings.");
   }

@@ -14,6 +14,11 @@ const BookingSchema = new Schema(
       ref: "User",
       required: true,
     },
+    designerId: {
+      type: Schema.Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
     status: {
       type: [String],
       enum: [
