@@ -24,9 +24,9 @@ export const updateBooking = async (bookingId, updates, designerId) => {
 };
 
 // Get all bookings for a specific designer
-export const getAllBookings = async (userId) => {
+export const getAllBookings = async (designerId) => {
   try {
-    return await Booking.find({userId});
+    return await Booking.find({designerId});
   } catch (error) {
     throw ApiError.internalServerError("Error retrieving bookings.");
   }

@@ -28,8 +28,8 @@ export const updateBooking = async (req, res) => {
 // Get all bookings for the logged-in designer
 export const getAllBookings = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const bookings = await bookingService.getAllBookings(userId);
+    const designerId = req.user.userId;
+    const bookings = await bookingService.getAllBookings(designerId);
 
     return res.status(200).json({
       message: "Bookings retrieved successfully.",
