@@ -1,14 +1,22 @@
 import * as bookingService from "../../services/user/booking.service.js";
+import Product from "../../models/product.model.js";
 
 // Create a new client
 export const createBooking = async (req, res) => {
   try {
-   const status = "pending"
+    const status = "pending";
     const userId = req.user.userId;
+    const { productId } = req.body;
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw ApiError.notFound("Product not found.");
+    }
+
     const newBooking = await bookingService.createBooking({
       ...req.body,
       userId,
       status,
+      designerId: product.designerId,
     });
 
     return res
