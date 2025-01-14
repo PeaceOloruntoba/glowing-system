@@ -12,8 +12,8 @@ router
   .all(methodNotAllowed);
 router
   .route("/booking/:bookingId")
-  .get(isAuth, checkDesignerRegistration)
-  .patch(isAuth, checkDesignerRegistration)
+  .get(isAuth, )
+  .patch(isAuth, )
   .all(methodNotAllowed);
 
 export default router;

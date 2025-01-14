@@ -11,7 +11,7 @@ import { errorMiddleware } from "./src/middlewares/error.js";
 
 import authRoutesV1 from "./src/v1/routes/auth.routes.js";
 import designerRoutesV1 from "./src/v1/routes/designer.routes.js";
-import userRoutesV1 from "./src/v1/routes/user.routes.js
+import userRoutesV1 from "./src/v1/routes/user.routes.js";
 
 const app = express();
 const port = process.env.PORT || 8080;
