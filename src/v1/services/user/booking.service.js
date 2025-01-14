@@ -52,7 +52,9 @@ export const updateBooking = async (bookingId, updates, userId) => {
 // Get all bookings for a specific user
 export const getAllBookings = async (userId) => {
   try {
-    return await Booking.find({ userId }).populate("userId", "email");
+    return await Booking.find({ userId })
+      .populate("userId", "email fullName")
+      .populate("productId", "productName discountPrice");
   } catch (error) {
     throw ApiError.internalServerError("Error retrieving bookings.");
   }
@@ -60,10 +62,9 @@ export const getAllBookings = async (userId) => {
 
 // Get a single booking by ID for a specific user
 export const getBookingById = async (id, userId) => {
-  const booking = await Booking.findOne({ _id: id, userId }).populate(
-    "userId",
-    "email fullName"
-  );
+  const booking = await Booking.findOne({ _id: id, userId })
+    .populate("userId", "email fullName")
+    .populate("productId");
   if (!booking) {
     throw ApiError.notFound("Booking not found.");
   }
