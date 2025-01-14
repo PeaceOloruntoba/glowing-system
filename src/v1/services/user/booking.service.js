@@ -1,6 +1,5 @@
 import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
-import Product from "../../models/product.model.js";
 
 // Helper function to validate and fetch booking
 const validateBooking = async (bookingId, userId) => {
