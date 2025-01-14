@@ -1,14 +1,14 @@
 import express from "express";
 import methodNotAllowed from "../../middlewares/methodNotAllowed.js";
 import { isAuth } from "../../middlewares/auth.js";
-import { createBooking } from "../controllers/user/booking.controller.js";
+import { createBooking, getAllBookings } from "../controllers/user/booking.controller.js";
 
 const router = express.Router();
 
 router
   .route("/booking")
   .post(isAuth, createBooking)
-  .get(isAuth, )
+  .get(isAuth, getAllBookings)
   .all(methodNotAllowed);
 router
   .route("/booking/:bookingId")
