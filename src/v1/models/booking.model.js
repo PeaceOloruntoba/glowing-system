@@ -32,6 +32,18 @@ const BookingSchema = new Schema(
       ],
       default: ["pending"],
     },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed"],
+      default: "pending",
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    comment: {
+      type: String,
+    },
   },
   {
     timestamps: true,
