@@ -1,13 +1,12 @@
-import * as paymentService from "../../services/user/payment.service.js";
-import Booking from "../../models/booking.model.js";
-import Order from "../../models/order.model.js";
+import * as paymentService from "../services/user/payment.service.js";
+import Booking from "../models/booking.model.js";
+import Order from "../models/order.model.js";
 
 // Initialize payment for a booking or order
 export const initializePayment = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { type, entityId } = req.body; // type can be "booking" or "order"
-
     let entity;
     if (type === "booking") {
       entity = await Booking.findById(entityId);
@@ -16,7 +15,6 @@ export const initializePayment = async (req, res) => {
     } else {
       throw ApiError.badRequest("Invalid payment type.");
     }
-
     if (!entity)
       throw ApiError.notFound(
         `${type.charAt(0).toUpperCase() + type.slice(1)} not found.`
@@ -29,9 +27,7 @@ export const initializePayment = async (req, res) => {
       throw ApiError.badRequest(
         `${type.charAt(0).toUpperCase() + type.slice(1)} is already paid for.`
       );
-
     const amount = entity.totalPrice || entity.productId.discountPrice; // Assume totalPrice or product price
-
     const payment = await paymentService.initializePayment(
       req.user.email,
       amount,
@@ -39,7 +35,6 @@ export const initializePayment = async (req, res) => {
         [type + "Id"]: entityId, // Set metadata to differentiate between booking and order
       }
     );
-
     return res.status(200).json({
       message: "Payment initialized successfully.",
       data: payment, // Includes authorization_url for redirection
@@ -58,7 +53,6 @@ export const verifyPayment = async (req, res) => {
       entityId,
       reference
     );
-
     return res.status(200).json({
       message: result.message,
       data: result.entity,
