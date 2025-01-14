@@ -1,11 +1,11 @@
-import * as clientService from "../../services/designer/client.service.js";
+import * as bookingService from "../../services/user/booking.service.js";
 
 // Create a new client
 export const createBooking = async (req, res) => {
   try {
    const status = "pending"
     const userId = req.user.userId;
-    const newClient = await clientService.createClient({
+    const newBooking = await bookingService.createClient({
       ...req.body,
       userId,
       status,
@@ -13,7 +13,7 @@ export const createBooking = async (req, res) => {
 
     return res
       .status(201)
-      .json({ message: "Client created successfully.", data: newClient });
+      .json({ message: "Client created successfully.", data: newBooking });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error creating client." });
@@ -82,7 +82,7 @@ export const deleteClient = async (req, res) => {
   try {
     const { clientId } = req.params;
     const userId = req.user.userId; // Get logged-in designer's ID
-    await clientService.deleteClient(clientId, userId);
+    await bookingService.deleteClient(clientId, userId);
     return res.status(200).json({ message: "Client deleted successfully." });
   } catch (error) {
     console.error(error);
