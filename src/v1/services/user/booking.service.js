@@ -1,87 +1,49 @@
 import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
+import Product from "../../models/product.model.js";
+
+// Helper function to validate and fetch booking
+const validateBooking = async (bookingId, userId) => {
+  const booking = await Booking.findById(bookingId).populate("productId");
+  if (!booking) throw ApiError.notFound("Booking not found.");
+  if (booking.userId.toString() !== userId.toString())
+    throw ApiError.unauthorized("Unauthorized to modify this booking.");
+  return booking;
+};
 
 // Create a new booking
 export const createBooking = async (data) => {
-  try {
-    const booking = new Booking(data);
-    return await booking.save();
-  } catch (error) {
-    throw ApiError.internalServerError("Error creating booking.");
-  }
-};
-
-// Update booking
-// export const updateBooking = async (bookingId, updates, userId) => {
-//   const booking = await Booking.findById(bookingId);
-//   if (!booking) {
-//     throw ApiError.notFound("Booking not found.");
-//   }
-//   if (booking.userId.toString() !== userId.toString()) {
-//     throw ApiError.unauthorized(
-//       "You are not authorized to update this booking."
-//     );
-//   }
-//   Object.assign(booking, updates);
-//   const updateBook = await booking.save();
-//   return updateBook;
-// };
-
-export const updateBooking = async (bookingId, updates, userId) => {
-  const booking = await Booking.findById(bookingId);
-  if (!booking) {
-    throw ApiError.notFound("Booking not found.");
-  }
-
-  if (booking.userId.toString() !== userId.toString()) {
-    throw ApiError.unauthorized(
-      "You are not authorized to update this booking."
-    );
-  }
-  const restrictedStatuses = ["paid", "cancelled", "delivered"];
-  if (updates.status && restrictedStatuses.includes(updates.status)) {
-    throw ApiError.forbidden(
-      `You are not allowed to set status to '${updates.status}'.`
-    );
-  }
-  booking.status = updates.status || booking.status;
-
+  const booking = new Booking(data);
   return await booking.save();
 };
 
-// Get all bookings for a specific user
-export const getAllBookings = async (userId) => {
-  try {
-    return await Booking.find({ userId })
-      .populate("userId", "email fullName")
-      .populate("productId", "productName discountPrice");
-  } catch (error) {
-    throw ApiError.internalServerError("Error retrieving bookings.");
+// Update an existing booking
+export const updateBooking = async (bookingId, updates, userId) => {
+  const booking = await validateBooking(bookingId, userId);
+
+  const restrictedStatuses = ["paid", "cancelled", "delivered"];
+  if (updates.status && restrictedStatuses.includes(updates.status)) {
+    throw ApiError.forbidden(`Cannot set status to '${updates.status}'.`);
   }
+
+  Object.assign(booking, updates);
+  return await booking.save();
 };
 
-// Get a single booking by ID for a specific user
-export const getBookingById = async (id, userId) => {
-  const booking = await Booking.findOne({ _id: id, userId })
+// Fetch all bookings for a user
+export const getAllBookings = async (userId) => {
+  return await Booking.find({ userId })
     .populate("userId", "email fullName")
-    .populate("productId");
-  if (!booking) {
-    throw ApiError.notFound("Booking not found.");
-  }
-  return booking;
+    .populate("productId", "productName discountPrice");
+};
+
+// Fetch a single booking by ID
+export const getBookingById = async (bookingId, userId) => {
+  return await validateBooking(bookingId, userId);
 };
 
 // Delete a booking
 export const deleteBooking = async (bookingId, userId) => {
-  const booking = await Booking.findById(bookingId);
-  if (!booking) {
-    throw ApiError.notFound("Booking not found.");
-  }
-
-  if (booking.userId.toString() !== userId.toString()) {
-    throw ApiError.unauthorized(
-      "You are not authorized to delete this booking."
-    );
-  }
-  return await Booking.findByIdAndDelete(bookingId);
+  const booking = await validateBooking(bookingId, userId);
+  return await Booking.findByIdAndDelete(booking._id);
 };
