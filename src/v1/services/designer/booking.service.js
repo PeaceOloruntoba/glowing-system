@@ -37,7 +37,7 @@ export const getBookingById = async (id, designerId) => {
   const booking = await Booking.findOne({ _id: id, designerId }).populate(
     "userId",
     "email fullName"
-  );
+  ).populate("productId");
   if (!booking) {
     throw ApiError.notFound("Booking not found.");
   }
