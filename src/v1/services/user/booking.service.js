@@ -26,6 +26,7 @@ export const createBooking = async (data) => {
 //   const updateBook = await booking.save();
 //   return updateBook;
 // };
+
 export const updateBooking = async (bookingId, updates, userId) => {
   const booking = await Booking.findById(bookingId);
   if (!booking) {

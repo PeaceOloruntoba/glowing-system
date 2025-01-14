@@ -5,7 +5,7 @@ export const createBooking = async (req, res) => {
   try {
    const status = "pending"
     const userId = req.user.userId;
-    const newBooking = await bookingService.createClient({
+    const newBooking = await bookingService.createBooking({
       ...req.body,
       userId,
       status,
@@ -13,7 +13,7 @@ export const createBooking = async (req, res) => {
 
     return res
       .status(201)
-      .json({ message: "Client created successfully.", data: newBooking });
+      .json({ message: "Booking created successfully.", data: newBooking });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Error creating client." });
