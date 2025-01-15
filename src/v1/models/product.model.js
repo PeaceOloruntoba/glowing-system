@@ -51,6 +51,10 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
+    payableAmount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -59,6 +63,11 @@ const productSchema = new Schema(
 
 productSchema.pre("save", function (next) {
   this.discountPrice = this.price - this.discount;
+  next();
+});
+
+productSchema.pre("save", function (next) {
+  this.payableAmount = this.discountPrice + this.discountPrice * 0.12;
   next();
 });
 
