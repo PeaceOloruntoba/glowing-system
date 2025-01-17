@@ -25,6 +25,10 @@ const productSchema = new Schema(
       type: Number,
       required: true,
     },
+    ourPrice: {
+      type: Number,
+      required: true,
+    },
     images: {
       type: [String],
       required: true,
@@ -62,7 +66,12 @@ const productSchema = new Schema(
 );
 
 productSchema.pre("save", function (next) {
-  this.discountPrice = this.price - this.discount;
+  this.ourPrice = this.price + this.price * 0.12;
+  next();
+});
+
+productSchema.pre("save", function (next) {
+  this.discountPrice = this.ourPrice - this.discount;
   next();
 });
 
