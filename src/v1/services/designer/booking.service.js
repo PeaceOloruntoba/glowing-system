@@ -26,19 +26,28 @@ export const updateBooking = async (bookingId, updates, designerId) => {
 // Get all bookings for a specific designer
 export const getAllBookings = async (designerId) => {
   try {
-    const bookings = await Booking.find({ designerId }).populate("productId", "productName coverImage").populate("userId", "fullName");
+    const bookings = await Booking.find({ designerId })
+      .populate("productId", "productName coverImage discountPrice")
+      .populate({
+        path: "userId",
+        populate: {
+          path: "userId",
+          model: "UserProfile",
+          select: "fullName",
+        },
+      });
     return bookings;
   } catch (error) {
     throw ApiError.internalServerError("Error retrieving bookings.");
   }
 };
 
+
 // Get a single booking by ID for a specific designer
 export const getBookingById = async (id, designerId) => {
-  const booking = await Booking.findOne({ _id: id, designerId }).populate(
-    "userId",
-    "email fullName"
-  ).populate("productId");
+  const booking = await Booking.findOne({ _id: id, designerId })
+    .populate("userId", "email fullName")
+    .populate("productId");
   if (!booking) {
     throw ApiError.notFound("Booking not found.");
   }
