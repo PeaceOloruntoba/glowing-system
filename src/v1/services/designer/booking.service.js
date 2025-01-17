@@ -1,5 +1,6 @@
 import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
+import UserProfile from "../../models/userProfile.model.js";
 
 // Update booking
 export const updateBooking = async (bookingId, updates, designerId) => {
@@ -26,22 +27,33 @@ export const updateBooking = async (bookingId, updates, designerId) => {
 // Get all bookings for a specific designer
 export const getAllBookings = async (designerId) => {
   try {
-    const bookings = await Booking.find({ designerId })
-      .populate("productId", "productName coverImage discountPrice")
-      .populate({
-        path: "userId",
-        populate: {
-          path: "userId",
-          model: "UserProfile",
-          select: "fullName",
-        },
-      });
-    return bookings;
+    // Fetch all bookings for the given designer
+    const bookings = await Booking.find({ designerId }).populate(
+      "productId",
+      "productName coverImage discountPrice"
+    );
+
+    // Map over bookings to fetch additional user details
+    const enrichedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        const userProfile = await UserProfile.findOne({ userId: booking.userId });
+
+        // Ensure userProfile exists before destructuring
+        const { fullName, phoneNumber } = userProfile || {};
+        return {
+          ...booking.toObject(), // Spread booking details
+          fullName,
+          phoneNumber,
+        };
+      })
+    );
+
+    return enrichedBookings;
   } catch (error) {
+    console.error(error);
     throw ApiError.internalServerError("Error retrieving bookings.");
   }
 };
-
 
 // Get a single booking by ID for a specific designer
 export const getBookingById = async (id, designerId) => {
