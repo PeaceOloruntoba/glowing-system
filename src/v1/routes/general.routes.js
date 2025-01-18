@@ -8,7 +8,6 @@ import {
 const router = express.Router();
 
 router.route("/products").get(getProducts).all(methodNotAllowed);
-
 router.route("/products/:productId").get(getProductById).all(methodNotAllowed);
 
 export default router
