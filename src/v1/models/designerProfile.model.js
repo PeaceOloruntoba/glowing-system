@@ -38,6 +38,14 @@ const DesignerProfileSchema = new Schema(
       required: [true, "Please provide an account number"],
       match: [/^\d{10}$/, "Please provide a valid account number"],
     },
+    socialMedia: {
+      type: String,
+      required: [true, "Please provide a verifiable social media link"],
+    },
+    cacRegNo:{
+      type: String,
+      required: [true, "Please provide a valid CAC Reg No"]
+    },
   },
   {
     timestamps: true,
