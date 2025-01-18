@@ -191,6 +191,8 @@ export default {
       userProfile.firstName
     );
 
+    console.log(emailInfo)
+
     return {
       success: true,
       status_code: 200,
