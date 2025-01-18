@@ -1,11 +1,12 @@
 import express from "express";
 import methodNotAllowed from "../../middlewares/methodNotAllowed.js";
 import {
-  createProduct,
-  updateProduct,
   getProducts,
   getProductById,
-  getProductsByDesigner,
-  deleteProduct,
-} from "../controllers/designer/product.controller.js";
+} from "../controllers/general/product.controller.js";
 
+const router = express.Router();
+
+router.route("/products").get(getProducts).all(methodNotAllowed);
+
+router.route("/products/:productId").get(getProductById).all(methodNotAllowed);
