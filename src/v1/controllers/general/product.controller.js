@@ -1,4 +1,4 @@
-import productService from "../../services/designer/product.service.js";
+import productService from "../../services/general/product.service.js";
 
 export const getProducts = async function (req, res, next) {
   try {
