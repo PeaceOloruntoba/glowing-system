@@ -22,8 +22,9 @@ const DesignerProfileSchema = new Schema(
       ],
     },
     yearsOfExperience: {
-      type: Number,
+      type: String,
       required: [true, "Please provide your years of experience"],
+      match: [/^\d{10}$/, "Please provide a valid account number"],
     },
     businessAddress: {
       type: String,
@@ -42,9 +43,9 @@ const DesignerProfileSchema = new Schema(
       type: String,
       required: [true, "Please provide a verifiable social media link"],
     },
-    cacRegNo:{
+    cacRegNo: {
       type: String,
-      required: [true, "Please provide a valid CAC Reg No"]
+      required: [true, "Please provide a valid CAC Reg No"],
     },
   },
   {
