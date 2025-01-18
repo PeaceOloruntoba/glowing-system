@@ -37,7 +37,7 @@ router.route("/forgot-password").post(forgotPassword).all(methodNotAllowed);
 router.route("/reset-password").post(resetPassword).all(methodNotAllowed);
 router
   .route("/designer-register")
-  .post(designerValidator, isAuth, registerDesigner)
+  .post(isAuth, designerValidator, registerDesigner)
   .all(methodNotAllowed);
 
 export default router;
