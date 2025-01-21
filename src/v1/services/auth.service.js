@@ -33,11 +33,6 @@ export default {
     const designerProfile = await DesignerProfile.findOne(
       isObjectId ? { userId: identifier } : { email: identifier }
     );
-
-    if (!userProfile) {
-      throw ApiError.notFound("User Not Found");
-    }
-
     return designerProfile;
   },
   register: async function (userData = {}) {
@@ -155,22 +150,23 @@ export default {
     };
   },
   getUser: async function (userId, roles) {
-    if (roles == "designer") {
-      const userProfile = await this.findUserProfileByIdOrEmail(userId);
-      const response = {
-        success: true,
-        status_code: 200,
-        message: "User Retrieved Successfully",
-        data: {
-          user: {
-            id: userProfile.userId,
-            email: userProfile.email,
-            fullName: userProfile.fullName,
-            phoneNumber: userProfile.phoneNumber,
-          },
+    const userProfile = await this.findUserProfileByIdOrEmail(userId);
+    const designerProfile = await this.findDesignerProfileByIdOrEmail(userId);
+    return {
+      success: true,
+      status_code: 200,
+      message: "User Retrieved Successfully",
+      data: {
+        user: {
+          id: userProfile.userId,
+          businessName: designerProfile?.businessName,
+          businessAddress: designerProfile?.businessAddress,
+          fullName: userProfile.fullName,
+          email: userProfile.email,
+          phoneNumber: userProfile.phoneNumber,
         },
-      };
-    }
+      },
+    };
   },
   getDesignerProfile: async function (userId) {
     const designerProfile = await DesignerProfile.findOne({ userId });

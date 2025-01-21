@@ -34,7 +34,9 @@ export const login = asyncWrapper(async (req, res, next) => {
 
 export const getUser = asyncWrapper(async (req, res, next) => {
   const { userId } = req.user;
-  const result = await authService.getUser(userId);
+  const { roles } = req.params;
+  console.log(roles)
+  const result = await authService.getUser(userId, roles);
   res.status(200).json(result);
 });
 

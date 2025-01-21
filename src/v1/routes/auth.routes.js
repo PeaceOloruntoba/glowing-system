@@ -19,14 +19,10 @@ const router = express.Router();
 router
   .route("/")
   .get(isAuth, getUser)
-  //   .patch(auth, updateUser)
-  //   .delete(auth, deleteUser)
   .all(methodNotAllowed);
 router
   .route("/designer-profile")
   .get(isAuth, getDesignerProfile)
-  //   .patch(auth, updateUser)
-  //   .delete(auth, deleteUser)
   .all(methodNotAllowed);
 router.route("/signup").post(userValidator, register).all(methodNotAllowed);
 router.route("/signin").post(login).all(methodNotAllowed);
