@@ -2,7 +2,7 @@ import { body, check } from "express-validator";
 import { handleValidationErrors } from "../../middlewares/error.js";
 
 export const productValidator = [
-  body("category")
+  body("productCategoryId")
     .exists()
     .withMessage("Product Category is required")
     .isInt({ min: 1, max: 4 })
