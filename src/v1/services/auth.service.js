@@ -28,6 +28,18 @@ export default {
 
     return userProfile;
   },
+  findDesignerProfileByIdOrEmail: async function (identifier) {
+    const isObjectId = mongoose.Types.ObjectId.isValid(identifier);
+    const designerProfile = await DesignerProfile.findOne(
+      isObjectId ? { userId: identifier } : { email: identifier }
+    );
+
+    if (!userProfile) {
+      throw ApiError.notFound("User Not Found");
+    }
+
+    return designerProfile;
+  },
   register: async function (userData = {}) {
     const { fullName, email, password, role, phoneNumber } = userData;
     console.log(fullName);
@@ -142,21 +154,23 @@ export default {
       },
     };
   },
-  getUser: async function (userId) {
-    const userProfile = await this.findUserProfileByIdOrEmail(userId);
-    return {
-      success: true,
-      status_code: 200,
-      message: "User Retrieved Successfully",
-      data: {
-        user: {
-          id: userProfile.userId,
-          email: userProfile.email,
-          fullName: userProfile.fullName,
-          businessName: userProfile.businessName,
+  getUser: async function (userId, roles) {
+    if (roles == "designer") {
+      const userProfile = await this.findUserProfileByIdOrEmail(userId);
+      const response = {
+        success: true,
+        status_code: 200,
+        message: "User Retrieved Successfully",
+        data: {
+          user: {
+            id: userProfile.userId,
+            email: userProfile.email,
+            fullName: userProfile.fullName,
+            phoneNumber: userProfile.phoneNumber,
+          },
         },
-      },
-    };
+      };
+    }
   },
   getDesignerProfile: async function (userId) {
     const designerProfile = await DesignerProfile.findOne({ userId });
@@ -195,7 +209,7 @@ export default {
       userProfile.firstName
     );
 
-    console.log(emailInfo)
+    console.log(emailInfo);
 
     return {
       success: true,

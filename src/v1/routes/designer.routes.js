@@ -37,7 +37,7 @@ router
   )
   .all(methodNotAllowed);
 router
-  .route("/designerProduct/:designerId")
+  .route("/designerProduct")
   .get(isAuth, getProductsByDesigner)
   .all(methodNotAllowed);
 router

@@ -64,7 +64,7 @@ export const getProductById = async function (req, res, next) {
 
 export const getProductsByDesigner = async function (req, res, next) {
   try {
-    const designerId = req.params.designerId;
+    const designerId = req.user.userId;
     const products = await productService.getProductsByDesignerId(designerId);
     res.status(200).json({ success: true, data: products });
   } catch (error) {
