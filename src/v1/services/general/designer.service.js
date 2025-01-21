@@ -4,7 +4,7 @@ import Product from "../../models/product.model.js";
 
 export default {
   getAllDesigners: async function () {
-    const designers = await DesignerProfile.findOne()
+    const designers = await DesignerProfile.find()
     return designers;
   },
 
