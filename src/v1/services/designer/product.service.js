@@ -4,24 +4,24 @@ import Product from "../../models/product.model.js";
 export default {
   createProduct: async function (designerId, productData, images, coverImage) {
     const {
-      category,
       productName,
       description,
       price,
       size,
       location,
       discount,
+      productCategoryId,
     } = productData;
 
     const product = await Product.create({
       designerId,
-      category,
       productName,
       description,
       price,
       images, // These will already be URLs from multer's Cloudinary storage
       coverImage, // Cloudinary URL from multer
       discount,
+      productCategoryId,
       size,
       location,
     });

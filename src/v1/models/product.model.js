@@ -3,11 +3,6 @@ const { Schema } = mongoose;
 
 const productSchema = new Schema(
   {
-    category: {
-      type: Number,
-      required: true,
-      enum: [1, 2, 3, 4],
-    },
     designerId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -27,7 +22,13 @@ const productSchema = new Schema(
     },
     ourPrice: {
       type: Number,
+      default: 0,
+    },
+    productCategoryId: {
+      type: Number,
       required: true,
+      default: 1,
+      enum: [1, 2, 3, 4],
     },
     images: {
       type: [String],
@@ -55,10 +56,6 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
-    payableAmount: {
-      type: Number,
-      default: 0,
-    },
   },
   {
     timestamps: true,
@@ -72,11 +69,6 @@ productSchema.pre("save", function (next) {
 
 productSchema.pre("save", function (next) {
   this.discountPrice = this.ourPrice - this.discount;
-  next();
-});
-
-productSchema.pre("save", function (next) {
-  this.payableAmount = this.discountPrice + this.discountPrice * 0.12;
   next();
 });
 
