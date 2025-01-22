@@ -82,6 +82,7 @@ export default {
       businessAddress,
       bank,
       accountNumber,
+      state,
     } = designerData;
     const existingProfile = await DesignerProfile.findOne({ userId });
     if (existingProfile) {
@@ -103,6 +104,7 @@ export default {
             businessAddress,
             bank,
             accountNumber,
+            state,
           },
         ],
         { session }
@@ -161,6 +163,7 @@ export default {
           id: userProfile.userId,
           businessName: designerProfile?.businessName,
           businessAddress: designerProfile?.businessAddress,
+          state: designerProfile?.state,
           fullName: userProfile.fullName,
           email: userProfile.email,
           phoneNumber: userProfile.phoneNumber,
