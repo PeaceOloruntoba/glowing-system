@@ -26,6 +26,12 @@ export const designerValidator = [
     .isString()
     .withMessage("Business Address must be a string"),
 
+  body("state")
+    .exists()
+    .withMessage("Your state is required")
+    .isString()
+    .withMessage("Your state must be a string"),
+
   body("bank")
     .exists()
     .withMessage("Bank is required")

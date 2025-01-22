@@ -23,15 +23,19 @@ const DesignerProfileSchema = new Schema(
     },
     yearsOfExperience: {
       type: String,
-      required: [true, "Please provide your years of experience"],
+      required: [true, "Please provide your years of experience."],
     },
     businessAddress: {
       type: String,
-      required: [true, "Please provide a business address"],
+      required: [true, "Please provide a business address."],
+    },
+    state: {
+      type: String,
+      required: [true, "Please select the state your business is located in."],
     },
     bank: {
       type: String,
-      required: [true, "Please provide a bank name"],
+      required: [true, "Please provide a bank name."],
     },
     accountNumber: {
       type: String,
