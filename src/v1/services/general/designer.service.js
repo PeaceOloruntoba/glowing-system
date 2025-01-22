@@ -13,9 +13,11 @@ export default {
           userId: designer.userId,
         });
         const fullName = userProfile?.fullName;
+        const image = userProfile?.image;
         return {
           ...designer.toObject(),
           fullName,
+          image,
         };
       })
     );
@@ -28,11 +30,13 @@ export default {
     const fullName = userProfile?.fullName;
     const phoneNumber = userProfile?.phoneNumber;
     const email = userProfile?.email;
+    const image = userProfile?.image;
     const designer = {
       ...result.toObject(),
       fullName,
       email,
       phoneNumber,
+      image,
     };
     return designer;
   },
