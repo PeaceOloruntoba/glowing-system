@@ -1,5 +1,6 @@
 import Cart from "../../models/cart.model"
-const createCart = async (user) => {
+
+export const createCart = async (user) => {
   const cart = new Cart({ user });
   return await cart.save();
 };
