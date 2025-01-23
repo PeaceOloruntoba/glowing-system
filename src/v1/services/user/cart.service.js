@@ -4,11 +4,11 @@ const createCart = async (user) => {
   return await cart.save();
 };
 
-const getCartByUser = async (userId) => {
+export const getCartByUser = async (userId) => {
   return await Cart.findOne({ user: userId }).populate("products.product");
 };
 
-const addItemToCart = async (userId, productId) => {
+export const addItemToCart = async (userId, productId) => {
   const cart = await Cart.findOne({ user: userId });
 
   if (!cart) {
@@ -28,7 +28,7 @@ const addItemToCart = async (userId, productId) => {
   return await cart.save();
 };
 
-const updateCartItemQuantity = async (userId, productId, quantity) => {
+export const updateCartItemQuantity = async (userId, productId, quantity) => {
   const cart = await Cart.findOne({ user: userId });
 
   if (!cart) {
@@ -48,7 +48,7 @@ const updateCartItemQuantity = async (userId, productId, quantity) => {
   return await cart.save();
 };
 
-const removeItemFromCart = async (userId, productId) => {
+export const removeItemFromCart = async (userId, productId) => {
   const cart = await Cart.findOne({ user: userId });
 
   if (!cart) {
@@ -60,12 +60,4 @@ const removeItemFromCart = async (userId, productId) => {
   );
 
   return await cart.save();
-};
-
-module.exports = {
-  createCart,
-  getCartByUser,
-  addItemToCart,
-  updateCartItemQuantity,
-  removeItemFromCart,
 };
