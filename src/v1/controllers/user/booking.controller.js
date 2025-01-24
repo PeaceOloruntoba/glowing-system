@@ -16,6 +16,7 @@ export const createBooking = async (req, res) => {
       userId,
       status: "pending",
       designerId: product.designerId,
+      price: product.ourPrice,
     });
 
     return res.status(201).json({
