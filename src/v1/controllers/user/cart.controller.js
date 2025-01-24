@@ -1,39 +1,43 @@
 import cartService from "../../services/user/cart.service";
 
-const createCart = async (req, res) => {
+export const createCart = async (req, res) => {
+  const userId = req.user.userId;
   try {
-    const cart = await cartService.createCart(req.user.userId);
+    const cart = await cartService.createCart(userId);
     res.status(201).json(cart);
   } catch (error) {
     res.status(500).json({ error: "Failed to create cart" });
   }
 };
 
-const getCart = async (req, res) => {
+export const getCart = async (req, res) => {
+  const userId = req.user.userId;
   try {
-    const cart = await cartService.getCartByUser(req.user.userId);
+    const cart = await cartService.getCartByUser(userId);
     res.status(200).json(cart);
   } catch (error) {
     res.status(500).json({ error: "Failed to get cart" });
   }
 };
 
-const addItemToCart = async (req, res) => {
+export const addItemToCart = async (req, res) => {
+  const userId = req.user.userId;
   try {
     const { productId } = req.params;
-    const cart = await cartService.addItemToCart(req.user.userId, productId);
+    const cart = await cartService.addItemToCart(userId, productId);
     res.status(200).json(cart);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-const updateCartItemQuantity = async (req, res) => {
+export const updateCartItemQuantity = async (req, res) => {
+  const userId = req.user.userId;
   try {
     const { productId } = req.params;
     const { quantity } = req.body;
     const cart = await cartService.updateCartItemQuantity(
-      req.user.userId,
+      userId,
       productId,
       quantity
     );
@@ -43,10 +47,11 @@ const updateCartItemQuantity = async (req, res) => {
   }
 };
 
-const removeItemFromCart = async (req, res) => {
+export const removeItemFromCart = async (req, res) => {
+  const userId = req.user.userId;
   try {
     const { productId } = req.params;
-    const cart = await cartService.removeItemFromCart(req.user.userId, productId);
+    const cart = await cartService.removeItemFromCart(userId, productId);
     res.status(200).json(cart);
   } catch (error) {
     res.status(400).json({ error: error.message });
