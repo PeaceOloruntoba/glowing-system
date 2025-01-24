@@ -1,59 +1,55 @@
-import cartService from "../../services/user/cart.service";
+import cartService from "../../services/general/cart.service.js";
 
-export const createCart = async (req, res) => {
-  const userId = req.user.userId;
+export const getCart = async function (req, res, next) {
   try {
-    const cart = await cartService.createCart(userId);
-    res.status(201).json(cart);
+    const userId = req.user.userId;
+    const cart = await cartService.getCart(userId);
+    res.status(200).json({ success: true, data: cart });
   } catch (error) {
-    res.status(500).json({ error: "Failed to create cart" });
+    next(error);
   }
 };
 
-export const getCart = async (req, res) => {
-  const userId = req.user.userId;
+export const addToCart = async function (req, res, next) {
   try {
-    const cart = await cartService.getCartByUser(userId);
-    res.status(200).json(cart);
+    const userId = req.user.userId;
+    const { productId, quantity } = req.body;
+    const cart = await cartService.addToCart(userId, productId, quantity);
+    res.status(200).json({ success: true, data: cart });
   } catch (error) {
-    res.status(500).json({ error: "Failed to get cart" });
+    next(error);
   }
 };
 
-export const addItemToCart = async (req, res) => {
-  const userId = req.user.userId;
+export const incrementQuantity = async function (req, res, next) {
   try {
+    const userId = req.user.userId;
     const { productId } = req.params;
-    const cart = await cartService.addItemToCart(userId, productId);
-    res.status(200).json(cart);
+    const cart = await cartService.incrementQuantity(userId, productId);
+    res.status(200).json({ success: true, data: cart });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
-export const updateCartItemQuantity = async (req, res) => {
-  const userId = req.user.userId;
+export const decrementQuantity = async function (req, res, next) {
   try {
+    const userId = req.user.userId;
     const { productId } = req.params;
-    const { quantity } = req.body;
-    const cart = await cartService.updateCartItemQuantity(
-      userId,
-      productId,
-      quantity
-    );
-    res.status(200).json(cart);
+    const cart = await cartService.decrementQuantity(userId, productId);
+    res.status(200).json({ success: true, data: cart });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
 
-export const removeItemFromCart = async (req, res) => {
-  const userId = req.user.userId;
+export const removeFromCart = async function (req, res, next) {
   try {
+    const userId = req.user.userId;
     const { productId } = req.params;
-    const cart = await cartService.removeItemFromCart(userId, productId);
-    res.status(200).json(cart);
+    const cart = await cartService.removeFromCart(userId, productId);
+    res.status(200).json({ success: true, data: cart });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
