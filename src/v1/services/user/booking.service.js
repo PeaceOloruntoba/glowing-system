@@ -121,10 +121,10 @@ export const confirmDelivery = async (bookingId, userId) => {
 export const getAllBookings = async (designerId) => {
   try {
     // Fetch all bookings for the given designer
-    const bookings = await Booking.find({ designerId })
-      .populate("productId", "productName coverImage ourPrice")
-      .populate("userId")
-      .populate("designerId");
+    const bookings = await Booking.find({ designerId }).populate(
+      "productId",
+      "productName coverImage ourPrice"
+    );
 
     // Map over bookings to fetch additional user details
     const enrichedBookings = await Promise.all(
@@ -134,11 +134,12 @@ export const getAllBookings = async (designerId) => {
         });
 
         // Ensure designerProfile exists before destructuring
-        const { businessName, state } = designerProfile || {};
+        const { businessName, state, businessAddress } = designerProfile || {};
         return {
           ...booking.toObject(), // Spread booking details
           businessName,
           state,
+          bussinessAddress,
         };
       })
     );
