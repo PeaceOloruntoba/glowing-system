@@ -3,19 +3,19 @@ import catchAsync from "../../../utils/catchAsync.js";
 
 // ✅ Accept booking
 export const acceptBooking = catchAsync(async (req, res) => {
-  await bookingService.acceptBooking(req.params.id, req.user.id);
+  await bookingService.acceptBooking(req.params.id, req.user.userId);
   res.json({ success: true, message: "Booking accepted." });
 });
 
 // ✅ Decline booking
 export const declineBooking = catchAsync(async (req, res) => {
-  await bookingService.declineBooking(req.params.id, req.user.id);
+  await bookingService.declineBooking(req.params.id, req.user.userId);
   res.json({ success: true, message: "Booking declined." });
 });
 
 // ✅ Mark as out for delivery
 export const markAsOutForDelivery = catchAsync(async (req, res) => {
-  await bookingService.markAsOutForDelivery(req.params.id, req.user.id);
+  await bookingService.markAsOutForDelivery(req.params.id, req.user.userId);
   res.json({ success: true, message: "Booking marked as out for delivery." });
 });
 

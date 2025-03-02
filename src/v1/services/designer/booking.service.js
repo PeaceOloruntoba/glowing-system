@@ -6,9 +6,12 @@ import UserProfile from "../../models/userProfile.model.js";
 // ✅ Designer accepts booking
 export const acceptBooking = async (bookingId, designerId) => {
   const booking = await Booking.findById(bookingId);
+  console.log(designerId);
   if (!booking) throw ApiError.notFound("Booking not found.");
-  if (booking.designerId.toString() !== designerId.toString()) throw ApiError.unauthorized("Unauthorized action.");
-  if (booking.status !== "pending") throw ApiError.forbidden("Only pending bookings can be accepted.");
+  if (booking.designerId.toString() !== designerId.toString())
+    throw ApiError.unauthorized("Unauthorized action.");
+  if (booking.status !== "pending")
+    throw ApiError.forbidden("Only pending bookings can be accepted.");
 
   booking.status = "accepted";
   await booking.save();
@@ -30,7 +33,8 @@ export const acceptBooking = async (bookingId, designerId) => {
 export const declineBooking = async (bookingId, designerId) => {
   const booking = await Booking.findById(bookingId);
   if (!booking) throw ApiError.notFound("Booking not found.");
-  if (booking.designerId.toString() !== designerId.toString()) throw ApiError.unauthorized("Unauthorized action.");
+  if (booking.designerId.toString() !== designerId.toString())
+    throw ApiError.unauthorized("Unauthorized action.");
 
   booking.status = "rejected";
   await booking.save();
@@ -52,8 +56,10 @@ export const declineBooking = async (bookingId, designerId) => {
 export const markAsOutForDelivery = async (bookingId, designerId) => {
   const booking = await Booking.findById(bookingId);
   if (!booking) throw ApiError.notFound("Booking not found.");
-  if (booking.designerId.toString() !== designerId.toString()) throw ApiError.unauthorized("Unauthorized action.");
-  if (booking.status !== "paid") throw ApiError.forbidden("Booking must be paid before delivery.");
+  if (booking.designerId.toString() !== designerId.toString())
+    throw ApiError.unauthorized("Unauthorized action.");
+  if (booking.status !== "paid")
+    throw ApiError.forbidden("Booking must be paid before delivery.");
 
   booking.status = "out for delivery";
   await booking.save();
@@ -83,7 +89,9 @@ export const getAllBookings = async (designerId) => {
     // Map over bookings to fetch additional user details
     const enrichedBookings = await Promise.all(
       bookings.map(async (booking) => {
-        const userProfile = await UserProfile.findOne({ userId: booking.userId });
+        const userProfile = await UserProfile.findOne({
+          userId: booking.userId,
+        });
 
         // Ensure userProfile exists before destructuring
         const { fullName, phoneNumber } = userProfile || {};
