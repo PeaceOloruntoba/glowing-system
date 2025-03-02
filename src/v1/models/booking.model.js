@@ -20,7 +20,7 @@ const BookingSchema = new Schema(
       required: true,
     },
     status: {
-      type: [String],
+      type: String,
       enum: [
         "pending",
         "ongoing",
@@ -29,6 +29,7 @@ const BookingSchema = new Schema(
         "dispatched",
         "delivered",
         "cancelled",
+        "rejected",
       ],
       default: ["pending"],
     },
