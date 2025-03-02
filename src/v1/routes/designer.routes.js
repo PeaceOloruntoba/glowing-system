@@ -21,7 +21,7 @@ import {
   updateClient,
 } from "../controllers/designer/client.controller.js";
 import { clientValidator } from "../validators/client.validator.js";
-import { getAllBookings, getBookingById, updateBooking } from "../controllers/designer/booking.controller.js";
+import { acceptBooking, declineBooking, getAllBookings, getBookingById, markAsOutForDelivery, updateBooking } from "../controllers/designer/booking.controller.js";
 
 const router = express.Router();
 
@@ -75,7 +75,18 @@ router
 router
   .route("/booking/:bookingId")
   .get(isAuth, checkDesignerRegistration, getBookingById)
-  .patch(isAuth, checkDesignerRegistration, updateBooking)
+  .all(methodNotAllowed);
+router
+  .route("/booking/:id/accept")
+  .post(isAuth, checkDesignerRegistration, acceptBooking)
+  .all(methodNotAllowed);
+router
+  .route("/booking/:id/decline")
+  .post(isAuth, checkDesignerRegistration, declineBooking)
+  .all(methodNotAllowed);
+router
+  .route("/booking/:id/out-for-delivery")
+  .post(isAuth, checkDesignerRegistration, markAsOutForDelivery)
   .all(methodNotAllowed);
 
 export default router;
