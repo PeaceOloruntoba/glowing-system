@@ -1,8 +1,8 @@
 import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
-import sendEmail from "../../../utils/emailUtils.js"; // Ensure this utility is correctly set up
 import UserProfile from "../../models/userProfile.model.js";
 import processPaystackPayment from "../../../utils/paystackPayment.js"; // New Paystack function
+import emailUtils from "../../../utils/emailUtils.js";
 
 // ✅ Validate and fetch booking (used for updates)
 const validateBooking = async (bookingId, userId) => {
@@ -23,7 +23,7 @@ export const createBooking = async (data) => {
     userId: booking.designerId,
   });
   if (designerProfile) {
-    await sendEmail({
+    await emailUtils.sendEmail({
       to: designerProfile.email,
       subject: "New Booking Request",
       text: `A new booking has been placed. Review and accept it.`,
@@ -47,7 +47,7 @@ export const cancelBooking = async (bookingId, userId) => {
     userId: booking.designerId,
   });
   if (designerProfile) {
-    await sendEmail({
+    await emailUtils.sendEmail({
       to: designerProfile.email,
       subject: "Booking Cancelled",
       text: `The user has cancelled their booking.`,
@@ -77,7 +77,7 @@ export const makePayment = async (bookingId, userId) => {
     userId: booking.designerId,
   });
   if (designerProfile) {
-    await sendEmail({
+    await emailUtils.sendEmail({
       to: designerProfile.email,
       subject: "Payment Received",
       text: `The user has successfully made a payment for their booking.`,
@@ -101,7 +101,7 @@ export const confirmDelivery = async (bookingId, userId) => {
     userId: booking.designerId,
   });
   if (designerProfile) {
-    await sendEmail({
+    await emailUtils.sendEmail({
       to: designerProfile.email,
       subject: "Booking Delivered",
       text: `The user has confirmed that the booking is delivered.`,
