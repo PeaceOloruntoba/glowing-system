@@ -23,6 +23,7 @@ const BookingSchema = new Schema(
       type: String,
       enum: [
         "pending",
+        "accepted",
         "ongoing",
         "paid",
         "packaged",
