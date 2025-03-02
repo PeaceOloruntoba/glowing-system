@@ -1,7 +1,10 @@
 import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
+import sendEmail from "../../../utils/emailUtils.js";
+import UserProfile from "../../models/userProfile.model.js";
+import processPaystackPayment from "../../../utils/paystackPayment.js";
 
-// Helper function to validate and fetch booking
+// ✅ Validate and fetch booking (used for updates)
 const validateBooking = async (bookingId, userId) => {
   const booking = await Booking.findById(bookingId).populate("productId");
   if (!booking) throw ApiError.notFound("Booking not found.");
@@ -10,39 +13,100 @@ const validateBooking = async (bookingId, userId) => {
   return booking;
 };
 
-// Create a new booking
+// ✅ Create a new booking (User initiates)
 export const createBooking = async (data) => {
-  const booking = new Booking(data);
-  return await booking.save();
-};
+  const booking = new Booking({ ...data, status: "pending" });
+  await booking.save();
 
-// Update an existing booking
-export const updateBooking = async (bookingId, updates, userId) => {
-  const booking = await validateBooking(bookingId, userId);
-
-  const restrictedStatuses = ["paid", "cancelled", "delivered"];
-  if (updates.status && restrictedStatuses.includes(updates.status)) {
-    throw ApiError.forbidden(`Cannot set status to '${updates.status}'.`);
+  // Notify designer about a new booking
+  const designerProfile = await UserProfile.findOne({
+    userId: booking.designerId,
+  });
+  if (designerProfile) {
+    await sendEmail({
+      to: designerProfile.email,
+      subject: "New Booking Request",
+      text: `A new booking has been placed. Review and accept it.`,
+    });
   }
 
-  Object.assign(booking, updates);
-  return await booking.save();
+  return booking;
 };
 
-// Fetch all bookings for a user
-export const getAllBookings = async (userId) => {
-  return await Booking.find({ userId })
-    .populate("userId", "email fullName")
-    .populate("productId", "productName discountPrice");
-};
-
-// Fetch a single booking by ID
-export const getBookingById = async (bookingId, userId) => {
-  return await validateBooking(bookingId, userId);
-};
-
-// Delete a booking
-export const deleteBooking = async (bookingId, userId) => {
+// ✅ User cancels booking before payment
+export const cancelBooking = async (bookingId, userId) => {
   const booking = await validateBooking(bookingId, userId);
-  return await Booking.findByIdAndDelete(booking._id);
+  if (booking.status !== "pending")
+    throw ApiError.forbidden("Cannot cancel a booking after it's accepted.");
+
+  booking.status = "cancelled";
+  await booking.save();
+
+  // Notify designer
+  const designerProfile = await UserProfile.findOne({
+    userId: booking.designerId,
+  });
+  if (designerProfile) {
+    await sendEmail({
+      to: designerProfile.email,
+      subject: "Booking Cancelled",
+      text: `The user has cancelled their booking.`,
+    });
+  }
+
+  return booking;
+};
+
+// ✅ User makes payment via Paystack
+export const makePayment = async (bookingId, userId) => {
+  const booking = await validateBooking(bookingId, userId);
+  if (booking.status !== "accepted")
+    throw ApiError.forbidden("Payment can only be made for accepted bookings.");
+
+  // Process payment
+  const paymentResponse = await processPaystackPayment(
+    bookingId,
+    booking.price
+  );
+
+  booking.status = "paid";
+  await booking.save();
+
+  // Notify designer & user
+  const designerProfile = await UserProfile.findOne({
+    userId: booking.designerId,
+  });
+  if (designerProfile) {
+    await sendEmail({
+      to: designerProfile.email,
+      subject: "Payment Received",
+      text: `The user has successfully made a payment for their booking.`,
+    });
+  }
+
+  return { booking, paymentResponse };
+};
+
+// ✅ Confirm delivery (User approves final stage)
+export const confirmDelivery = async (bookingId, userId) => {
+  const booking = await validateBooking(bookingId, userId);
+  if (booking.status !== "out for delivery")
+    throw ApiError.forbidden("Booking must be out for delivery first.");
+
+  booking.status = "delivered";
+  await booking.save();
+
+  // Notify designer
+  const designerProfile = await UserProfile.findOne({
+    userId: booking.designerId,
+  });
+  if (designerProfile) {
+    await sendEmail({
+      to: designerProfile.email,
+      subject: "Booking Delivered",
+      text: `The user has confirmed that the booking is delivered.`,
+    });
+  }
+
+  return booking;
 };
