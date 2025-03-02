@@ -1,11 +1,17 @@
 import * as bookingService from "../../services/user/booking.service.js";
 import catchAsync from "../../../utils/catchAsync.js";
+import productService from "../../services/general/product.service.js";
 
 // ✅ Create a new booking
 export const createBooking = catchAsync(async (req, res) => {
+  const productId = req.body.productId;
+  const product = await productService.getProductById(productId);
+  console.log(product);
   const booking = await bookingService.createBooking({
     ...req.body,
-    userId: req.user.id,
+    price: product.ourPrice,
+    designerId: product.designerId,
+    userId: req.user.userId,
   });
   res
     .status(201)
@@ -14,7 +20,7 @@ export const createBooking = catchAsync(async (req, res) => {
 
 // ✅ Cancel booking (only before payment)
 export const cancelBooking = catchAsync(async (req, res) => {
-  await bookingService.cancelBooking(req.params.id, req.user.id);
+  await bookingService.cancelBooking(req.params.id, req.user.userId);
   res.json({ success: true, message: "Booking cancelled successfully." });
 });
 
@@ -22,14 +28,14 @@ export const cancelBooking = catchAsync(async (req, res) => {
 export const makePayment = catchAsync(async (req, res) => {
   const paymentData = await bookingService.makePayment(
     req.params.id,
-    req.user.id
+    req.user.userId
   );
   res.json({ success: true, message: "Payment initiated.", paymentData });
 });
 
 // ✅ Confirm delivery (final step)
 export const confirmDelivery = catchAsync(async (req, res) => {
-  await bookingService.confirmDelivery(req.params.id, req.user.id);
+  await bookingService.confirmDelivery(req.params.id, req.user.userId);
   res.json({ success: true, message: "Booking marked as delivered." });
 });
 
