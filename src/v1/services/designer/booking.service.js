@@ -1,6 +1,7 @@
 import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
 import UserProfile from "../../models/userProfile.model.js";
+import emailUtils from "../../../utils/emailUtils.js";
 
 // Update booking
 // ✅ Designer accepts booking
@@ -19,7 +20,7 @@ export const acceptBooking = async (bookingId, designerId) => {
   // Notify user to make payment
   const userProfile = await UserProfile.findOne({ userId: booking.userId });
   if (userProfile) {
-    await sendEmail({
+    await emailUtils.sendEmail({
       to: userProfile.email,
       subject: "Booking Accepted - Make Payment",
       text: `Your booking has been accepted. Please proceed with the payment.`,
@@ -42,7 +43,7 @@ export const declineBooking = async (bookingId, designerId) => {
   // Notify user
   const userProfile = await UserProfile.findOne({ userId: booking.userId });
   if (userProfile) {
-    await sendEmail({
+    await emailUtils.sendEmail({
       to: userProfile.email,
       subject: "Booking Declined",
       text: `Unfortunately, the designer has declined your booking.`,
@@ -67,7 +68,7 @@ export const markAsOutForDelivery = async (bookingId, designerId) => {
   // Notify user
   const userProfile = await UserProfile.findOne({ userId: booking.userId });
   if (userProfile) {
-    await sendEmail({
+    await emailUtils.sendEmail({
       to: userProfile.email,
       subject: "Booking is Out for Delivery",
       text: `Your booking is now out for delivery.`,
