@@ -3,6 +3,7 @@ import ApiError from "../../../utils/apiError.js";
 import UserProfile from "../../models/userProfile.model.js";
 import processPaystackPayment from "../../../utils/paystackPayment.js"; // New Paystack function
 import emailUtils from "../../../utils/emailUtils.js";
+import authService from "../auth.service.js";
 
 // ✅ Validate and fetch booking (used for updates)
 const validateBooking = async (bookingId, userId) => {
@@ -62,12 +63,13 @@ export const makePayment = async (bookingId, userId) => {
   const booking = await validateBooking(bookingId, userId);
   if (booking.status !== "accepted")
     throw ApiError.forbidden("Payment can only be made for accepted bookings.");
-
+  const user = await authService.getUser(userId);
   // Process payment
-  const paymentResponse = await processPaystackPayment(
-    bookingId,
-    booking.price
-  );
+  const paymentResponse = await processPaystackPayment({
+    email: user.data.user.email,
+    reference: bookingId,
+    ammount: booking.price,
+  });
 
   booking.status = "paid";
   await booking.save();
