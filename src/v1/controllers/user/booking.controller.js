@@ -1,53 +1,37 @@
 import * as bookingService from "../../services/user/booking.service.js";
-import Product from "../../models/product.model.js";
-import ApiError from "../../../utils/apiError.js";
+import catchAsync from "../../../utils/catchAsync.js";
 
-// Create a new booking
-export const createBooking = async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const { productId } = req.body;
+// ✅ Create a new booking
+export const createBooking = catchAsync(async (req, res) => {
+  const booking = await bookingService.createBooking({
+    ...req.body,
+    userId: req.user.id,
+  });
+  res
+    .status(201)
+    .json({ success: true, message: "Booking created successfully.", booking });
+});
 
-    const product = await Product.findById(productId);
-    if (!product) throw ApiError.notFound("Product not found.");
+// ✅ Cancel booking (only before payment)
+export const cancelBooking = catchAsync(async (req, res) => {
+  await bookingService.cancelBooking(req.params.id, req.user.id);
+  res.json({ success: true, message: "Booking cancelled successfully." });
+});
 
-    const newBooking = await bookingService.createBooking({
-      ...req.body,
-      userId,
-      status: "pending",
-      designerId: product.designerId,
-      price: product.ourPrice,
-    });
+// ✅ Make payment using Paystack
+export const makePayment = catchAsync(async (req, res) => {
+  const paymentData = await bookingService.makePayment(
+    req.params.id,
+    req.user.id
+  );
+  res.json({ success: true, message: "Payment initiated.", paymentData });
+});
 
-    return res.status(201).json({
-      message: "Booking created successfully.",
-      data: newBooking,
-    });
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message });
-  }
-};
-
-// Update booking
-export const updateBooking = async (req, res) => {
-  try {
-    const { bookingId } = req.params;
-    const userId = req.user.userId;
-
-    const updatedBooking = await bookingService.updateBooking(
-      bookingId,
-      req.body,
-      userId
-    );
-
-    return res.status(200).json({
-      message: "Booking updated successfully.",
-      data: updatedBooking,
-    });
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ message: error.message });
-  }
-};
+// ✅ Confirm delivery (final step)
+export const confirmDelivery = catchAsync(async (req, res) => {
+  await bookingService.confirmDelivery(req.params.id, req.user.id);
+  res.json({ success: true, message: "Booking marked as delivered." });
+});
 
 // Get all bookings
 export const getAllBookings = async (req, res) => {
