@@ -3,25 +3,72 @@ import ApiError from "../../../utils/apiError.js";
 import UserProfile from "../../models/userProfile.model.js";
 
 // Update booking
-export const updateBooking = async (bookingId, updates, designerId) => {
+// ✅ Designer accepts booking
+export const acceptBooking = async (bookingId, designerId) => {
   const booking = await Booking.findById(bookingId);
-  if (!booking) {
-    throw ApiError.notFound("Booking not found.");
-  }
-  if (booking.designerId.toString() !== designerId.toString()) {
-    throw ApiError.unauthorized(
-      "You are not authorized to update this booking."
-    );
-  }
-  const restrictedStatuses = ["paid", "cancelled", "delivered"];
-  if (updates.status && restrictedStatuses.includes(updates.status)) {
-    throw ApiError.forbidden(
-      `You are not allowed to set status to '${updates.status}'.`
-    );
-  }
-  booking.status = updates.status || booking.status;
+  if (!booking) throw ApiError.notFound("Booking not found.");
+  if (booking.designerId.toString() !== designerId.toString()) throw ApiError.unauthorized("Unauthorized action.");
+  if (booking.status !== "pending") throw ApiError.forbidden("Only pending bookings can be accepted.");
 
-  return await booking.save();
+  booking.status = "accepted";
+  await booking.save();
+
+  // Notify user to make payment
+  const userProfile = await UserProfile.findOne({ userId: booking.userId });
+  if (userProfile) {
+    await sendEmail({
+      to: userProfile.email,
+      subject: "Booking Accepted - Make Payment",
+      text: `Your booking has been accepted. Please proceed with the payment.`,
+    });
+  }
+
+  return booking;
+};
+
+// ✅ Designer declines booking
+export const declineBooking = async (bookingId, designerId) => {
+  const booking = await Booking.findById(bookingId);
+  if (!booking) throw ApiError.notFound("Booking not found.");
+  if (booking.designerId.toString() !== designerId.toString()) throw ApiError.unauthorized("Unauthorized action.");
+
+  booking.status = "rejected";
+  await booking.save();
+
+  // Notify user
+  const userProfile = await UserProfile.findOne({ userId: booking.userId });
+  if (userProfile) {
+    await sendEmail({
+      to: userProfile.email,
+      subject: "Booking Declined",
+      text: `Unfortunately, the designer has declined your booking.`,
+    });
+  }
+
+  return booking;
+};
+
+// ✅ Designer updates booking status to "out for delivery"
+export const markAsOutForDelivery = async (bookingId, designerId) => {
+  const booking = await Booking.findById(bookingId);
+  if (!booking) throw ApiError.notFound("Booking not found.");
+  if (booking.designerId.toString() !== designerId.toString()) throw ApiError.unauthorized("Unauthorized action.");
+  if (booking.status !== "paid") throw ApiError.forbidden("Booking must be paid before delivery.");
+
+  booking.status = "out for delivery";
+  await booking.save();
+
+  // Notify user
+  const userProfile = await UserProfile.findOne({ userId: booking.userId });
+  if (userProfile) {
+    await sendEmail({
+      to: userProfile.email,
+      subject: "Booking is Out for Delivery",
+      text: `Your booking is now out for delivery.`,
+    });
+  }
+
+  return booking;
 };
 
 // Get all bookings for a specific designer
