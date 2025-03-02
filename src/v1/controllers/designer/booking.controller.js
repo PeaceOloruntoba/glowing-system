@@ -1,29 +1,23 @@
 import * as bookingService from "../../services/designer/booking.service.js";
+import catchAsync from "../../../utils/catchAsync.js";
 
-// Update an existing booking
-export const updateBooking = async (req, res) => {
-  try {
-    const { bookingId } = req.params;
-    const designerId = req.user.userId;
-    const updates = req.body;
+// ✅ Accept booking
+export const acceptBooking = catchAsync(async (req, res) => {
+  await bookingService.acceptBooking(req.params.id, req.user.id);
+  res.json({ success: true, message: "Booking accepted." });
+});
 
-    const updatedBooking = await bookingService.updateBooking(
-      bookingId,
-      updates,
-      designerId
-    );
+// ✅ Decline booking
+export const declineBooking = catchAsync(async (req, res) => {
+  await bookingService.declineBooking(req.params.id, req.user.id);
+  res.json({ success: true, message: "Booking declined." });
+});
 
-    return res.status(200).json({
-      message: "Booking updated successfully.",
-      data: updatedBooking,
-    });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(error.statusCode || 500)
-      .json({ message: error.message || "Error updating booking." });
-  }
-};
+// ✅ Mark as out for delivery
+export const markAsOutForDelivery = catchAsync(async (req, res) => {
+  await bookingService.markAsOutForDelivery(req.params.id, req.user.id);
+  res.json({ success: true, message: "Booking marked as out for delivery." });
+});
 
 // Get all bookings for the logged-in designer
 export const getAllBookings = async (req, res) => {
