@@ -7,7 +7,9 @@ import authService from "../auth.service.js";
 
 // ✅ Validate and fetch booking (used for updates)
 const validateBooking = async (bookingId, userId) => {
-  const booking = await Booking.findById(bookingId).populate("productId");
+  const booking = await Booking.findById(bookingId)
+    .populate("productId")
+    .populate("designerId");
   if (!booking) throw ApiError.notFound("Booking not found.");
   if (booking.userId.toString() !== userId.toString())
     throw ApiError.unauthorized("Unauthorized to modify this booking.");
@@ -65,7 +67,7 @@ export const makePayment = async (bookingId, userId) => {
     throw ApiError.forbidden("Payment can only be made for accepted bookings.");
   const user = await authService.getUser(userId);
   // Process payment
-  console.log(booking.price)
+  console.log(booking.price);
   const paymentResponse = await processPaystackPayment({
     email: user.data.user.email,
     reference: bookingId,
@@ -118,7 +120,8 @@ export const confirmDelivery = async (bookingId, userId) => {
 export const getAllBookings = async (userId) => {
   return await Booking.find({ userId })
     .populate("userId", "email fullName")
-    .populate("productId", "productName discountPrice");
+    .populate("productId", "productName ourPrice coverImage")
+    .populate("designerId", "businessName state");
 };
 
 // Fetch a single booking by ID
