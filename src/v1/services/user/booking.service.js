@@ -118,7 +118,6 @@ export const confirmDelivery = async (bookingId, userId) => {
 };
 
 // Fetch all bookings for a user
-// Get all bookings for a specific designer
 export const getAllBookings = async (designerId) => {
   try {
     // Fetch all bookings for the given designer
@@ -151,7 +150,7 @@ export const getAllBookings = async (designerId) => {
   }
 };
 
-// Get a single booking by ID for a specific designer
+// Get a single booking by ID for a specific user
 export const getBookingById = async (bookingId, userId) => {
   const booking = await Booking.findOne({ _id: bookingId, userId })
     .populate("designerId")
