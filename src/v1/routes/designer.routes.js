@@ -21,7 +21,13 @@ import {
   updateClient,
 } from "../controllers/designer/client.controller.js";
 import { clientValidator } from "../validators/client.validator.js";
-import { acceptBooking, declineBooking, getAllBookings, getBookingById, markAsOutForDelivery, updateBooking } from "../controllers/designer/booking.controller.js";
+import {
+  acceptBooking,
+  declineBooking,
+  getAllBookings,
+  getBookingById,
+  markAsOutForDelivery,
+} from "../controllers/designer/booking.controller.js";
 
 const router = express.Router();
 
