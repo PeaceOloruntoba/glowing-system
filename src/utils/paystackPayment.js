@@ -1,6 +1,9 @@
 import axios from "axios";
 
 const processPaystackPayment = async ({ email, amount, reference }) => {
+  console.log(email);
+  console.log(amount);
+  console.log(reference);
   try {
     const response = await axios.post(
       "https://api.paystack.co/transaction/initialize",

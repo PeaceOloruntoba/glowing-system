@@ -65,10 +65,11 @@ export const makePayment = async (bookingId, userId) => {
     throw ApiError.forbidden("Payment can only be made for accepted bookings.");
   const user = await authService.getUser(userId);
   // Process payment
+  console.log(booking.price)
   const paymentResponse = await processPaystackPayment({
     email: user.data.user.email,
     reference: bookingId,
-    ammount: booking.price,
+    amount: booking.price,
   });
 
   booking.status = "paid";
