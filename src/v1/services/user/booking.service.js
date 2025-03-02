@@ -159,7 +159,22 @@ export const getBookingById = async (bookingId, userId) => {
   if (!booking) {
     throw ApiError.notFound("Booking not found.");
   }
-  return booking;
+  const enrichedBooking = await Promise(async (booking) => {
+    const designerProfile = await DesignerProfile.findOne({
+      userId: booking.userId,
+    });
+
+    // Ensure designerProfile exists before destructuring
+    const { businessName, state, businessAddress } = designerProfile || {};
+    return {
+      ...booking.toObject(), // Spread booking details
+      businessName,
+      state,
+      businessAddress,
+    };
+  });
+
+  return enrichedBooking;
 };
 
 // Delete a booking
