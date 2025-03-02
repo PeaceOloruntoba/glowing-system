@@ -121,10 +121,10 @@ export const confirmDelivery = async (bookingId, userId) => {
 export const getAllBookings = async (designerId) => {
   try {
     // Fetch all bookings for the given designer
-    const bookings = await Booking.find({ designerId }).populate(
-      "productId",
-      "productName coverImage ourPrice"
-    );
+    const bookings = await Booking.find({ designerId })
+      .populate("productId", "productName coverImage ourPrice")
+      .populate("userId")
+      .populate("designerId");
 
     // Map over bookings to fetch additional user details
     const enrichedBookings = await Promise.all(
