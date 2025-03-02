@@ -1,27 +1,36 @@
 import axios from "axios";
 
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET;
-
-const processPaystackPayment = async (bookingId, amount) => {
+const processPaystackPayment = async ({ email, amount, reference }) => {
   try {
     const response = await axios.post(
       "https://api.paystack.co/transaction/initialize",
       {
-        amount: amount * 100, // Convert to kobo
-        currency: "NGN",
-        reference: `booking-${bookingId}-${Date.now()}`,
-        callback_url: `${process.env.BASE_URL}/payment/verify`,
+        email,
+        amount: amount * 100, // Convert amount to kobo (Paystack uses kobo)
+        reference, // Unique transaction reference
       },
       {
         headers: {
-          Authorization: `Bearer ${PAYSTACK_SECRET}`,
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
           "Content-Type": "application/json",
         },
       }
     );
+
+    console.log("Paystack Response:", response.data); // Log response to debug
+
+    if (!response.data.status) {
+      throw new Error(
+        `Payment initialization failed: ${response.data.message}`
+      );
+    }
+
     return response.data;
   } catch (error) {
-    console.error("Error processing Paystack payment:", error);
+    console.error(
+      "Paystack Payment Error:",
+      error.response?.data || error.message
+    );
     throw new Error("Payment processing failed.");
   }
 };
