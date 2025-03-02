@@ -1,8 +1,8 @@
 import Booking from "../../models/booking.model.js";
 import ApiError from "../../../utils/apiError.js";
-import sendEmail from "../../../utils/emailUtils.js";
+import sendEmail from "../../../utils/emailUtils.js"; // Ensure this utility is correctly set up
 import UserProfile from "../../models/userProfile.model.js";
-import processPaystackPayment from "../../../utils/paystackPayment.js";
+import processPaystackPayment from "../../../utils/paystackPayment.js"; // New Paystack function
 
 // ✅ Validate and fetch booking (used for updates)
 const validateBooking = async (bookingId, userId) => {
@@ -109,4 +109,22 @@ export const confirmDelivery = async (bookingId, userId) => {
   }
 
   return booking;
+};
+
+// Fetch all bookings for a user
+export const getAllBookings = async (userId) => {
+  return await Booking.find({ userId })
+    .populate("userId", "email fullName")
+    .populate("productId", "productName discountPrice");
+};
+
+// Fetch a single booking by ID
+export const getBookingById = async (bookingId, userId) => {
+  return await validateBooking(bookingId, userId);
+};
+
+// Delete a booking
+export const deleteBooking = async (bookingId, userId) => {
+  const booking = await validateBooking(bookingId, userId);
+  return await Booking.findByIdAndDelete(booking._id);
 };
