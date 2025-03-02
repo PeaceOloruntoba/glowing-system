@@ -139,7 +139,7 @@ export const getAllBookings = async (designerId) => {
           ...booking.toObject(), // Spread booking details
           businessName,
           state,
-          bussinessAddress,
+          businessAddress,
         };
       })
     );
