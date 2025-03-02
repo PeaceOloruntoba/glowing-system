@@ -16,7 +16,7 @@ const BookingSchema = new Schema(
     },
     designerId: {
       type: Schema.Types.ObjectId,
-      ref: "Product",
+      ref: "DesignerProfile",
       required: true,
     },
     status: {
