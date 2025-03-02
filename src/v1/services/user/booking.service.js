@@ -4,6 +4,7 @@ import UserProfile from "../../models/userProfile.model.js";
 import processPaystackPayment from "../../../utils/paystackPayment.js"; // New Paystack function
 import emailUtils from "../../../utils/emailUtils.js";
 import authService from "../auth.service.js";
+import DesignerProfile from "../../models/designerProfile.model.js";
 
 // ✅ Validate and fetch booking (used for updates)
 const validateBooking = async (bookingId, userId) => {
@@ -117,16 +118,48 @@ export const confirmDelivery = async (bookingId, userId) => {
 };
 
 // Fetch all bookings for a user
-export const getAllBookings = async (userId) => {
-  return await Booking.find({ userId })
-    .populate("userId", "email fullName")
-    .populate("productId", "productName ourPrice coverImage")
-    .populate("designerId", "businessName state");
+// Get all bookings for a specific designer
+export const getAllBookings = async (designerId) => {
+  try {
+    // Fetch all bookings for the given designer
+    const bookings = await Booking.find({ designerId }).populate(
+      "productId",
+      "productName coverImage ourPrice"
+    );
+
+    // Map over bookings to fetch additional user details
+    const enrichedBookings = await Promise.all(
+      bookings.map(async (booking) => {
+        const designerProfile = await DesignerProfile.findOne({
+          userId: booking.userId,
+        });
+
+        // Ensure designerProfile exists before destructuring
+        const { businessName, state } = designerProfile || {};
+        return {
+          ...booking.toObject(), // Spread booking details
+          businessName,
+          state,
+        };
+      })
+    );
+
+    return enrichedBookings;
+  } catch (error) {
+    console.error(error);
+    throw ApiError.internalServerError("Error retrieving bookings.");
+  }
 };
 
-// Fetch a single booking by ID
+// Get a single booking by ID for a specific designer
 export const getBookingById = async (bookingId, userId) => {
-  return await validateBooking(bookingId, userId);
+  const booking = await Booking.findOne({ _id: bookingId, userId })
+    .populate("designerId")
+    .populate("productId");
+  if (!booking) {
+    throw ApiError.notFound("Booking not found.");
+  }
+  return booking;
 };
 
 // Delete a booking
