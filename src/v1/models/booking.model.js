@@ -27,7 +27,7 @@ const BookingSchema = new Schema(
         "ongoing",
         "paid",
         "packaged",
-        "dispatched",
+        "out for delivery",
         "delivered",
         "cancelled",
         "rejected",
