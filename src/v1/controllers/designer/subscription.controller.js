@@ -71,7 +71,11 @@ const verifyPayment = async (req, res) => {
 
       await DesignerProfile.findOneAndUpdate(
         { userId: userId },
-        { subscriptionPlan: plan, subscriptionExpiry: expiryDate }
+        {
+          subscriptionPlan: plan,
+          subscriptionExpiry: expiryDate,
+          subActive: true,
+        }
       );
 
       res.status(200).json({ message: "Payment successful" });
