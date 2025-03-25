@@ -50,6 +50,19 @@ const DesignerProfileSchema = new Schema(
       type: String,
       required: [true, "Please provide a valid CAC Reg No"],
     },
+    subscriptionPlan: {
+      type: String,
+      enum: ["monthly", "biannual", "annual"],
+      default: null,
+    },
+    subscriptionExpiry: {
+      type: Date,
+      default: null,
+    },
+    subActive: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
@@ -57,4 +70,3 @@ const DesignerProfileSchema = new Schema(
 );
 
 export default mongoose.model("DesignerProfile", DesignerProfileSchema);
-    
