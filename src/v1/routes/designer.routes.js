@@ -32,6 +32,7 @@ import {
   handleSubscription,
   verifyPayment,
 } from "../controllers/designer/subscription.controller.js";
+import checkSubscription from "../../middlewares/designerSubscription.js";
 
 const router = express.Router();
 
@@ -51,6 +52,7 @@ router
   .post(
     isAuth,
     checkDesignerRegistration,
+    checkSubscription,
     productValidator,
     productImageUpload,
     createProduct
@@ -58,7 +60,7 @@ router
   .all(methodNotAllowed);
 router
   .route("/designerProduct")
-  .get(isAuth, getProductsByDesigner)
+  .get(isAuth, checkSubscription, getProductsByDesigner)
   .all(methodNotAllowed);
 router
   .route("/product/:productId")
@@ -66,6 +68,7 @@ router
   .patch(
     isAuth,
     checkDesignerRegistration,
+    checkSubscription,
     checkProductOwnership,
     productImageUpload,
     updateProduct
@@ -73,6 +76,7 @@ router
   .delete(
     isAuth,
     checkDesignerRegistration,
+    checkSubscription,
     checkProductOwnership,
     deleteProduct
   )
@@ -80,33 +84,44 @@ router
 router
   .route("/client")
   .get(isAuth, getAllClients)
-  .post(isAuth, checkDesignerRegistration, clientValidator, createClient)
+  .post(
+    isAuth,
+    checkDesignerRegistration,
+    checkSubscription,
+    clientValidator,
+    createClient
+  )
   .all(methodNotAllowed);
 router
   .route("/client/:clientId")
-  .get(isAuth, checkDesignerRegistration, getClientById)
-  .patch(isAuth, checkDesignerRegistration, updateClient)
-  .delete(isAuth, checkDesignerRegistration, deleteClient)
+  .get(isAuth, checkDesignerRegistration, checkSubscription, getClientById)
+  .patch(isAuth, checkDesignerRegistration, checkSubscription, updateClient)
+  .delete(isAuth, checkDesignerRegistration, checkSubscription, deleteClient)
   .all(methodNotAllowed);
 router
   .route("/booking")
-  .get(isAuth, checkDesignerRegistration, getAllBookings)
+  .get(isAuth, checkDesignerRegistration, checkSubscription, getAllBookings)
   .all(methodNotAllowed);
 router
   .route("/booking/:bookingId")
-  .get(isAuth, checkDesignerRegistration, getBookingById)
+  .get(isAuth, checkDesignerRegistration, checkSubscription, getBookingById)
   .all(methodNotAllowed);
 router
   .route("/booking/:id/accept")
-  .post(isAuth, checkDesignerRegistration, acceptBooking)
+  .post(isAuth, checkDesignerRegistration, checkSubscription, acceptBooking)
   .all(methodNotAllowed);
 router
   .route("/booking/:id/decline")
-  .post(isAuth, checkDesignerRegistration, declineBooking)
+  .post(isAuth, checkDesignerRegistration, checkSubscription, declineBooking)
   .all(methodNotAllowed);
 router
   .route("/booking/:id/out-for-delivery")
-  .post(isAuth, checkDesignerRegistration, markAsOutForDelivery)
+  .post(
+    isAuth,
+    checkDesignerRegistration,
+    checkSubscription,
+    markAsOutForDelivery
+  )
   .all(methodNotAllowed);
 
 export default router;
