@@ -1,4 +1,4 @@
-import DesignerProfile from "./models/DesignerProfile.js";
+import DesignerProfile from "../v1/models/designerProfile.model";
 
 const checkSubscription = async (req, res, next) => {
   try {
