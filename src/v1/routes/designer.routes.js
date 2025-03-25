@@ -28,9 +28,22 @@ import {
   getBookingById,
   markAsOutForDelivery,
 } from "../controllers/designer/booking.controller.js";
+import {
+  handleSubscription,
+  verifyPayment,
+} from "../controllers/designer/subscription.controller.js";
 
 const router = express.Router();
 
+// router.post("/subscription/initialize", authMiddleware, handleSubscription);
+// router.get("/verify/:reference", verifyPayment);
+router
+  .route("/subscription/initialize")
+  .post(isAuth, checkDesignerRegistration, handleSubscription)
+  .all(methodNotAllowed);
+router
+  .route("/subscription/verify/:reference")
+  .get(isAuth, checkDesignerRegistration, verifyPayment);
 router
   .route("/product")
   .get(getProducts)
