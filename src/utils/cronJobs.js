@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import DesignerProfile from "../v1/models/designerProfile.model";
+import DesignerProfile from "../v1/models/designerProfile.model.js";
 
 const checkExpiredSubscriptions = async () => {
   try {

@@ -13,6 +13,7 @@ import authRoutesV1 from "./src/v1/routes/auth.routes.js";
 import designerRoutesV1 from "./src/v1/routes/designer.routes.js";
 import userRoutesV1 from "./src/v1/routes/user.routes.js";
 import generalRoutesV1 from "./src/v1/routes/general.routes.js";
+import "./src/utils/cronJobs.js";
 
 const app = express();
 const port = process.env.PORT || 8080;

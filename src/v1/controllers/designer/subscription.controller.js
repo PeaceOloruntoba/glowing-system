@@ -1,5 +1,5 @@
 import Paystack from "paystack-api";
-import DesignerProfile from "./models/DesignerProfile.js";
+import DesignerProfile from "../../models/designerProfile.model.js";
 
 const paystack = Paystack(process.env.PAYSTACK_SECRET);
 
