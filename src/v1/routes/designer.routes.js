@@ -43,7 +43,8 @@ router
   .all(methodNotAllowed);
 router
   .route("/subscription/verify/:reference")
-  .get(isAuth, checkDesignerRegistration, verifyPayment);
+  .get(isAuth, checkDesignerRegistration, verifyPayment)
+  .all(methodNotAllowed);
 router
   .route("/product")
   .get(getProducts)
