@@ -167,6 +167,7 @@ export default {
           fullName: userProfile.fullName,
           email: userProfile.email,
           phoneNumber: userProfile.phoneNumber,
+          subActive: designerProfile?.subActive,
         },
       },
     };
@@ -189,6 +190,9 @@ export default {
           businessAddress: designerProfile.businessAddress,
           bank: designerProfile.bank,
           accountNumber: designerProfile.accountNumber,
+          subActive: designerProfile.subActive,
+          subscriptionExpiry: designerProfile.subscriptionExpiry,
+          subscriptionPlan: designerProfile.subscriptionPlan,
         },
       },
     };
