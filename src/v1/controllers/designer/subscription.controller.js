@@ -14,10 +14,10 @@ const handleSubscription = async (req, res) => {
         amount = 5000 * 100;
         break;
       case "biannual":
-        amount = 27500 * 100;
+        amount = 25000 * 100;
         break;
       case "annual":
-        amount = 55000 * 100;
+        amount = 50000 * 100;
         break;
       default:
         return res.status(400).json({ message: "Invalid subscription plan" });
