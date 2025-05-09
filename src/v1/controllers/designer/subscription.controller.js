@@ -6,13 +6,29 @@ const paystack = Paystack(process.env.PAYSTACK_SECRET);
 const handleSubscription = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { plan } = req.body; // Expecting the Paystack plan ID
+    const { plan } = req.body;
+    let amount;
+
+    switch (plan) {
+      case "monthly":
+        amount = 5000 * 100;
+        break;
+      case "biannual":
+        amount = 25000 * 100;
+        break;
+      case "annual":
+        amount = 50000 * 100;
+        break;
+      default:
+        return res.status(400).json({ message: "Invalid subscription plan" });
+    }
 
     const transaction = await paystack.transaction.initialize({
       email: req.user.email,
-      plan: plan, // Use the Paystack plan ID
+      amount: amount,
       metadata: {
         userId: userId,
+        plan: plan,
       },
     });
 
