@@ -18,8 +18,16 @@ import "./src/utils/cronJobs.js";
 const app = express();
 const port = process.env.PORT || 8080;
 
+// Configure CORS options
+const corsOptions = {
+  origin: ["http://localhost:4000", "https://kunibi.vercel.app"],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Allow cookies to be sent
+  optionsSuccessStatus: 204, // Some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
+app.use(cors(corsOptions)); // Apply CORS middleware with options
 app.use(express.json());
-app.use(cors());
 app.use(
   fileUpload({
     useTempFiles: true,
