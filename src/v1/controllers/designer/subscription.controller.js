@@ -1,11 +1,15 @@
 import Paystack from "paystack-api";
 import DesignerProfile from "../../models/designerProfile.model.js";
+import authService from "../../services/auth.service.js";
 
 const paystack = Paystack(process.env.PAYSTACK_SECRET);
 
 const handleSubscription = async (req, res) => {
   try {
     const userId = req.user.userId;
+    const roles = "designer";
+
+    const result = await authService.getUser(userId, roles);
     const { plan } = req.body;
     let amount;
 
@@ -23,8 +27,10 @@ const handleSubscription = async (req, res) => {
         return res.status(400).json({ message: "Invalid subscription plan" });
     }
 
+    console.log(result)
+
     const transaction = await paystack.transaction.initialize({
-      email: req.user.email,
+      email: result.data.user.email,
       amount: amount,
       metadata: {
         userId: userId,
