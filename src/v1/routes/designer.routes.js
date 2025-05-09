@@ -29,6 +29,7 @@ import {
   markAsOutForDelivery,
 } from "../controllers/designer/booking.controller.js";
 import {
+  getSubscriptionPlans,
   handleSubscription,
   verifyPayment,
 } from "../controllers/designer/subscription.controller.js";
@@ -45,6 +46,10 @@ router
 router
   .route("/subscription/verify/:reference")
   .get(isAuth, checkDesignerRegistration, verifyPayment)
+  .all(methodNotAllowed);
+router
+  .route("/subscription/plans")
+  .get(isAuth, checkDesignerRegistration, getSubscriptionPlans)
   .all(methodNotAllowed);
 router
   .route("/product")
@@ -125,4 +130,3 @@ router
   .all(methodNotAllowed);
 
 export default router;
-  
