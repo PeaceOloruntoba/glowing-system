@@ -49,7 +49,7 @@ router
   .all(methodNotAllowed);
 router
   .route("/subscription/plans")
-  .get(isAuth, checkDesignerRegistration, getSubscriptionPlans)
+  .get(getSubscriptionPlans)
   .all(methodNotAllowed);
 router
   .route("/product")
