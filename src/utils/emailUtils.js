@@ -51,7 +51,6 @@ const sendOTPViaEmail = async (email, userName) => {
   const otp = generateOTP();
   await OTP.create({ email, otp });
   const subject = "OTP Request";
-  //   const date = formatDate(Date.now());
   const date = Date.now();
   const emailText = `Hello ${userName},\n\nYour OTP is: ${otp}`;
   const template = handlebars.compile(emailTemplateSource);
