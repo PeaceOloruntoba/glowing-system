@@ -52,7 +52,7 @@ const DesignerProfileSchema = new Schema(
     },
     subscriptionPlan: {
       type: String,
-      enum: ["monthly", "biannual", "annual"],
+      enum: ["trial", "monthly", "biannual", "annual"],
       default: null,
     },
     subscriptionExpiry: {
@@ -62,6 +62,22 @@ const DesignerProfileSchema = new Schema(
     subActive: {
       type: Boolean,
       default: false,
+    },
+    trialStart: {
+      type: Date,
+      default: null,
+    },
+    trialEnd: {
+      type: Date,
+      default: null,
+    },
+    paystackSubscriptionCode: {
+      type: String,
+      default: null,
+    },
+    paystackCustomerCode: {
+      type: String,
+      default: null,
     },
   },
   {
