@@ -1,134 +1,125 @@
-import Paystack from "paystack-api";
 import DesignerProfile from "../../models/designerProfile.model.js";
-import authService from "../../services/auth.service.js";
+import PaystackService from "../../services/paystack.service.js";
+import ApiError from "../../../utils/apiError.js";
+import catchAsync from "../../../utils/catchAsync.js";
 
-const paystack = Paystack(process.env.PAYSTACK_SECRET);
+export const getSubscriptionPlans = catchAsync(async (req, res) => {
+  const plans = await PaystackService.getPlans();
+  return res.status(200).json({ success: true, data: plans.data });
+});
 
-const handleSubscription = async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const roles = "designer";
+export const handleSubscription = catchAsync(async (req, res) => {
+  const { userId, email } = req.user;
+  const { plan } = req.body; // "monthly", "biannual", "annual"
 
-    const result = await authService.getUser(userId, roles);
-    const { plan } = req.body;
-    let amount;
+  if (!["monthly", "biannual", "annual"].includes(plan)) {
+    throw ApiError.badRequest("Invalid subscription plan");
+  }
 
-    switch (plan) {
-      case "monthly":
-        amount = 5000 * 100;
-        break;
-      case "biannual":
-        amount = 25000 * 100;
-        break;
-      case "annual":
-        amount = 50000 * 100;
-        break;
-      default:
-        return res.status(400).json({ message: "Invalid subscription plan" });
-    }
+  const designerProfile = await DesignerProfile.findOne({ userId });
+  if (!designerProfile) {
+    throw ApiError.notFound("Designer profile not found");
+  }
 
-    console.log(result)
+  if (designerProfile.subActive && designerProfile.paystackSubscriptionCode) {
+    throw ApiError.badRequest("Subscription already active");
+  }
 
-    const transaction = await paystack.transaction.initialize({
-      email: result.data.user.email,
-      amount: amount,
-      metadata: {
-        userId: userId,
-        plan: plan,
-      },
+  if (!designerProfile.trialStart) {
+    // Start 14-day free trial
+    const now = new Date();
+    designerProfile.trialStart = now;
+    designerProfile.trialEnd = new Date(
+      now.getTime() + 14 * 24 * 60 * 60 * 1000
+    );
+    designerProfile.subscriptionPlan = "trial";
+    designerProfile.subActive = true;
+    await designerProfile.save();
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "14-day free trial started",
+        data: designerProfile,
+      });
+  }
+
+  const planConfig = {
+    monthly: { name: "Monthly Plan", interval: "monthly", amount: 5000 },
+    biannual: { name: "Biannual Plan", interval: "biannually", amount: 25000 },
+    annual: { name: "Annual Plan", interval: "annually", amount: 50000 },
+  };
+
+  // Check if plan exists, create if not
+  const plans = await PaystackService.getPlans();
+  let paystackPlan = plans.data.find(
+    (p) =>
+      p.interval === planConfig[plan].interval &&
+      p.amount === planConfig[plan].amount * 100
+  );
+  if (!paystackPlan) {
+    paystackPlan = await PaystackService.createPlan(
+      planConfig[plan].name,
+      planConfig[plan].interval,
+      planConfig[plan].amount
+    );
+  }
+
+  const reference = `SUB_${userId}_${Date.now()}`;
+  const paymentData = await PaystackService.initializeTransaction(
+    email,
+    planConfig[plan].amount,
+    reference,
+    { userId, plan, planCode: paystackPlan.plan_code }
+  );
+
+  designerProfile.subscriptionPlan = plan;
+  await designerProfile.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Subscription payment initialized",
+    authorizationUrl: paymentData.data.authorization_url,
+    reference,
+  });
+});
+
+export const verifyPayment = catchAsync(async (req, res) => {
+  const { reference } = req.params;
+  const paymentData = await PaystackService.verifyTransaction(reference);
+
+  if (paymentData.data.status !== "success") {
+    throw ApiError.badRequest("Payment verification failed");
+  }
+
+  const { metadata, customer } = paymentData.data;
+  const { userId, plan, planCode } = metadata;
+
+  const designerProfile = await DesignerProfile.findOne({ userId });
+  if (!designerProfile) {
+    throw ApiError.notFound("Designer profile not found");
+  }
+
+  const subscriptionData = await PaystackService.createSubscription(
+    customer.email,
+    planCode
+  );
+  designerProfile.paystackSubscriptionCode =
+    subscriptionData.data.subscription_code;
+  designerProfile.paystackCustomerCode = customer.customer_code;
+  designerProfile.subActive = true;
+  designerProfile.subscriptionExpiry = new Date(
+    subscriptionData.data.next_payment_date
+  );
+  designerProfile.trialStart = null;
+  designerProfile.trialEnd = null;
+  await designerProfile.save();
+
+  return res
+    .status(200)
+    .json({
+      success: true,
+      message: "Subscription activated",
+      data: designerProfile,
     });
-
-    res.status(200).json({
-      authorization_url: transaction.data.authorization_url,
-      reference: transaction.data.reference,
-    });
-  } catch (error) {
-    console.error("Paystack error:", error);
-    res.status(500).json({ message: "Payment initialization failed" });
-  }
-};
-
-const verifyPayment = async (req, res) => {
-  try {
-    const { reference } = req.params;
-
-    const verification = await paystack.transaction.verify({ reference });
-
-    if (verification.data.status === "success") {
-      const { metadata } = verification.data;
-      const { userId } = metadata;
-
-      // Check if the user has already had a subscription (to prevent multiple trials)
-      const existingProfile = await DesignerProfile.findOne({ userId });
-
-      let expiryDate;
-      const now = new Date();
-      let subscriptionPlan; // We might not have the plan name directly anymore
-
-      // If the user hasn't had a subscription before, give them a 14-day trial
-      if (
-        !existingProfile ||
-        !existingProfile.subscriptionExpiry ||
-        existingProfile.subscriptionExpiry < now
-      ) {
-        expiryDate = new Date(now.setDate(now.getDate() + 14));
-        subscriptionPlan = "trial";
-      } else {
-        // For existing or non-trial users, we need to fetch the plan details to determine the expiry
-        const transactionDetails = await paystack.transaction.fetch(
-          verification.data.id
-        );
-        const planId = transactionDetails.data.plan;
-        const planDetails = await paystack.plan.fetch(planId);
-        const interval = planDetails.data.interval;
-
-        subscriptionPlan = planDetails.data.name; // Or however you want to store the plan name
-
-        switch (interval) {
-          case "monthly":
-            expiryDate = new Date(now.setMonth(now.getMonth() + 1));
-            break;
-          case "biannually": // Paystack uses "biannually"
-            expiryDate = new Date(now.setMonth(now.getMonth() + 6));
-            break;
-          case "annually":
-            expiryDate = new Date(now.setFullYear(now.getFullYear() + 1));
-            break;
-          default:
-            return res.status(400).json({ message: "Invalid plan interval" });
-        }
-      }
-
-      await DesignerProfile.findOneAndUpdate(
-        { userId: userId },
-        {
-          subscriptionPlan: subscriptionPlan,
-          subscriptionExpiry: expiryDate,
-          subActive: true,
-        },
-        { upsert: true } // Create the profile if it doesn't exist
-      );
-
-      res
-        .status(200)
-        .json({ message: "Payment successful, subscription activated" });
-    } else {
-      res.status(400).json({ message: "Payment verification failed" });
-    }
-  } catch (error) {
-    console.error("Payment verification error:", error);
-    res.status(500).json({ message: "Payment verification failed" });
-  }
-};
-
-const getSubscriptionPlans = async (req, res) => {
-  try {
-    const { data } = await paystack.plan.list();
-    res.status(200).json(data);
-  } catch (error) {
-    console.error("Error fetching Paystack plans:", error);
-    res.status(500).json({ message: "Failed to fetch subscription plans" });
-  }
-};
-
-export { handleSubscription, verifyPayment, getSubscriptionPlans };
+});
