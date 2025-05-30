@@ -32,7 +32,7 @@ const BookingSchema = new Schema(
         "cancelled",
         "rejected",
       ],
-      default: ["pending"],
+      default: "pending",
     },
     paymentStatus: {
       type: String,
@@ -45,6 +45,10 @@ const BookingSchema = new Schema(
     },
     comment: {
       type: String,
+    },
+    notes: {
+      type: String,
+      default: "",
     },
   },
   {
