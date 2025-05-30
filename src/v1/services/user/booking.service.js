@@ -4,6 +4,7 @@ import UserProfile from "../../models/userProfile.model.js";
 import DesignerProfile from "../../models/designerProfile.model.js";
 import emailUtils from "../../../utils/emailUtils.js";
 import processPaystackPayment from "../../../utils/paystackPayment.js";
+import { createOrderFromBooking } from "./order.service.js";
 
 const validTransitions = {
   pending: ["accepted", "rejected", "cancelled"],
@@ -95,6 +96,8 @@ export const makePayment = async (bookingId, userId) => {
   booking.paymentStatus = "completed";
   await booking.save();
 
+  const order = await createOrderFromBooking(bookingId);
+
   const designerProfile = await DesignerProfile.findOne({
     userId: booking.designerId,
   });
@@ -102,11 +105,11 @@ export const makePayment = async (bookingId, userId) => {
     await emailUtils.sendEmail({
       to: designerProfile.email,
       subject: "Payment Received",
-      text: `The user has successfully paid for booking ${bookingId}.`,
+      text: `The user has successfully paid for booking ${bookingId}. An order has been created.`,
     });
   }
 
-  return { booking, paymentResponse };
+  return { booking, order, paymentResponse };
 };
 
 export const confirmDelivery = async (bookingId, userId) => {
