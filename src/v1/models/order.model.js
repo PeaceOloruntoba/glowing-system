@@ -1,47 +1,67 @@
 import mongoose from "mongoose";
+
 const { Schema } = mongoose;
 
 const OrderSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User", // User who is making the order
+      ref: "User",
       required: true,
     },
     products: [
       {
         productId: {
           type: Schema.Types.ObjectId,
-          ref: "Product", // The product being purchased
+          ref: "Product",
           required: true,
         },
         quantity: {
           type: Number,
           required: true,
-          min: 1, // Ensure that the quantity is at least 1
+          min: 1,
         },
         price: {
           type: Number,
-          required: true, // Price per unit of the product
+          required: true,
         },
       },
     ],
     totalPrice: {
       type: Number,
       required: true,
-      min: 0, // Total price of the order
+      min: 0,
     },
     status: {
       type: String,
-      enum: ["pending", "paid", "cancelled", "delivered"],
+      enum: [
+        "pending",
+        "paid",
+        "packaged",
+        "out for delivery",
+        "delivered",
+        "cancelled",
+      ],
       default: "pending",
     },
     paymentReference: {
-      type: String, // Reference from Paystack for the transaction
+      type: String,
+    },
+    deliveryId: {
+      type: String,
+      default: null,
+    },
+    shippingCost: {
+      type: Number,
+      default: 0,
+    },
+    deliveryAddress: {
+      type: String,
+      default: null,
     },
   },
   {
-    timestamps: true, // To track when the order was created or updated
+    timestamps: true,
   }
 );
 
