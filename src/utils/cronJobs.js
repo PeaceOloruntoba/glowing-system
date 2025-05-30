@@ -1,25 +1,53 @@
 import cron from "node-cron";
 import DesignerProfile from "../v1/models/designerProfile.model.js";
+import PaystackService from "../v1/services/paystack.service.js";
 
 const checkExpiredSubscriptions = async () => {
   try {
     const now = new Date();
 
-    // Find designers with expired subscriptions
+    // Check trial expirations
+    const expiredTrials = await DesignerProfile.find({
+      trialEnd: { $lt: now },
+      subActive: true,
+      subscriptionPlan: "trial",
+    });
+
+    if (expiredTrials.length > 0) {
+      await DesignerProfile.updateMany(
+        { _id: { $in: expiredTrials.map((d) => d._id) } },
+        {
+          subActive: false,
+          subscriptionPlan: null,
+          trialStart: null,
+          trialEnd: null,
+        }
+      );
+      console.log(`Deactivated ${expiredTrials.length} expired trials.`);
+    }
+
+    // Check subscription expirations
     const expiredSubscriptions = await DesignerProfile.find({
       subscriptionExpiry: { $lt: now },
       subActive: true,
+      subscriptionPlan: { $ne: "trial" },
     });
 
-    if (expiredSubscriptions.length > 0) {
-      // Update the subActive field to false
-      await DesignerProfile.updateMany(
-        { _id: { $in: expiredSubscriptions.map((designer) => designer._id) } },
-        { subActive: false }
-      );
+    for (const designer of expiredSubscriptions) {
+      if (designer.paystackSubscriptionCode) {
+        await PaystackService.disableSubscription(
+          designer.paystackSubscriptionCode
+        );
+      }
+      designer.subActive = false;
+      designer.subscriptionPlan = null;
+      designer.subscriptionExpiry = null;
+      await designer.save();
+    }
 
+    if (expiredSubscriptions.length > 0) {
       console.log(
-        `Updated ${expiredSubscriptions.length} expired subscriptions.`
+        `Deactivated ${expiredSubscriptions.length} expired subscriptions.`
       );
     } else {
       console.log("No expired subscriptions to update.");
@@ -29,7 +57,7 @@ const checkExpiredSubscriptions = async () => {
   }
 };
 
-// Schedule the cron job to run daily at midnight (00:00)
+// Run daily at midnight
 cron.schedule("0 0 * * *", checkExpiredSubscriptions);
 
-console.log("Subscription expiry check cron job started.");
+console.log("Subscription and trial expiry check cron job started.");
