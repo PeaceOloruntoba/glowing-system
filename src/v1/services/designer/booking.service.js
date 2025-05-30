@@ -3,44 +3,54 @@ import ApiError from "../../../utils/apiError.js";
 import UserProfile from "../../models/userProfile.model.js";
 import emailUtils from "../../../utils/emailUtils.js";
 
-// Update booking
-// ✅ Designer accepts booking
+const validTransitions = {
+  pending: ["accepted", "rejected"],
+  accepted: ["ongoing"],
+  ongoing: ["paid"],
+  paid: ["packaged"],
+  packaged: ["out for delivery"],
+  "out for delivery": ["delivered"],
+  delivered: [],
+  cancelled: [],
+  rejected: [],
+};
+
 export const acceptBooking = async (bookingId, designerId) => {
   const booking = await Booking.findById(bookingId);
-  console.log(designerId);
   if (!booking) throw ApiError.notFound("Booking not found.");
   if (booking.designerId.toString() !== designerId.toString())
     throw ApiError.unauthorized("Unauthorized action.");
-  if (booking.status !== "pending")
+  if (!validTransitions[booking.status].includes("accepted"))
     throw ApiError.forbidden("Only pending bookings can be accepted.");
 
   booking.status = "accepted";
   await booking.save();
 
-  // Notify user to make payment
   const userProfile = await UserProfile.findOne({ userId: booking.userId });
   if (userProfile) {
     await emailUtils.sendEmail({
       to: userProfile.email,
       subject: "Booking Accepted - Make Payment",
-      text: `Your booking has been accepted. Please proceed with the payment.`,
+      text: `Your booking has been accepted. Please proceed with the payment. Notes: ${
+        booking.notes || "None"
+      }`,
     });
   }
 
   return booking;
 };
 
-// ✅ Designer declines booking
 export const declineBooking = async (bookingId, designerId) => {
   const booking = await Booking.findById(bookingId);
   if (!booking) throw ApiError.notFound("Booking not found.");
   if (booking.designerId.toString() !== designerId.toString())
     throw ApiError.unauthorized("Unauthorized action.");
+  if (!validTransitions[booking.status].includes("rejected"))
+    throw ApiError.forbidden("Only pending bookings can be rejected.");
 
   booking.status = "rejected";
   await booking.save();
 
-  // Notify user
   const userProfile = await UserProfile.findOne({ userId: booking.userId });
   if (userProfile) {
     await emailUtils.sendEmail({
@@ -53,19 +63,19 @@ export const declineBooking = async (bookingId, designerId) => {
   return booking;
 };
 
-// ✅ Designer updates booking status to "out for delivery"
 export const markAsOutForDelivery = async (bookingId, designerId) => {
   const booking = await Booking.findById(bookingId);
   if (!booking) throw ApiError.notFound("Booking not found.");
   if (booking.designerId.toString() !== designerId.toString())
     throw ApiError.unauthorized("Unauthorized action.");
-  if (booking.status !== "paid")
-    throw ApiError.forbidden("Booking must be paid before delivery.");
+  if (!validTransitions[booking.status].includes("out for delivery"))
+    throw ApiError.forbidden(
+      "Booking must be paid and packaged before delivery."
+    );
 
   booking.status = "out for delivery";
   await booking.save();
 
-  // Notify user
   const userProfile = await UserProfile.findOne({ userId: booking.userId });
   if (userProfile) {
     await emailUtils.sendEmail({
@@ -78,40 +88,33 @@ export const markAsOutForDelivery = async (bookingId, designerId) => {
   return booking;
 };
 
-// Get all bookings for a specific designer
 export const getAllBookings = async (designerId) => {
   try {
-    // Fetch all bookings for the given designer
     const bookings = await Booking.find({ designerId }).populate(
       "productId",
       "productName coverImage discountPrice"
     );
 
-    // Map over bookings to fetch additional user details
     const enrichedBookings = await Promise.all(
       bookings.map(async (booking) => {
         const userProfile = await UserProfile.findOne({
           userId: booking.userId,
         });
-
-        // Ensure userProfile exists before destructuring
-        const { fullName, phoneNumber } = userProfile || {};
         return {
-          ...booking.toObject(), // Spread booking details
-          fullName,
-          phoneNumber,
+          ...booking.toObject(),
+          fullName: userProfile?.fullName,
+          phoneNumber: userProfile?.phoneNumber,
+          notes: booking.notes || "None",
         };
       })
     );
 
     return enrichedBookings;
   } catch (error) {
-    console.error(error);
     throw ApiError.internalServerError("Error retrieving bookings.");
   }
 };
 
-// Get a single booking by ID for a specific designer
 export const getBookingById = async (id, designerId) => {
   const booking = await Booking.findOne({ _id: id, designerId })
     .populate("userId", "email fullName")
@@ -119,5 +122,11 @@ export const getBookingById = async (id, designerId) => {
   if (!booking) {
     throw ApiError.notFound("Booking not found.");
   }
-  return booking;
+  const userProfile = await UserProfile.findOne({ userId: booking.userId });
+  return {
+    ...booking.toObject(),
+    fullName: userProfile?.fullName,
+    phoneNumber: userProfile?.phoneNumber,
+    notes: booking.notes || "None",
+  };
 };
