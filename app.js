@@ -13,6 +13,7 @@ import authRoutesV1 from "./src/v1/routes/auth.routes.js";
 import designerRoutesV1 from "./src/v1/routes/designer.routes.js";
 import userRoutesV1 from "./src/v1/routes/user.routes.js";
 import generalRoutesV1 from "./src/v1/routes/general.routes.js";
+import paystackWebhookRoutes from "./src/v1/routes/paystack.webhook.routes.js";
 import "./src/utils/cronJobs.js";
 
 const app = express();
@@ -41,6 +42,7 @@ app.use("/api/v1/designer", designerRoutesV1);
 app.use("/api/v1/user", userRoutesV1);
 app.use("/api/v1/general", generalRoutesV1);
 // app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/paystack", paystackWebhookRoutes);
 app.use(notFound);
 app.use(errorMiddleware);
 
