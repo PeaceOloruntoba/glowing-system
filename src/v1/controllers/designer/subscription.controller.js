@@ -12,7 +12,8 @@ export const handleSubscription = catchAsync(async (req, res) => {
   const { userId, email } = req.user;
   const { plan } = req.body; // "monthly", "biannual", "annual", "trial"
 
-  if (!["monthly", "biannual", "annual"].includes(plan)) {
+  // Validate plan
+  if (!["monthly", "biannual", "annual", "trial"].includes(plan)) {
     throw ApiError.badRequest("Invalid subscription plan");
   }
 
@@ -21,12 +22,16 @@ export const handleSubscription = catchAsync(async (req, res) => {
     throw ApiError.notFound("Designer profile not found");
   }
 
+  // Check if subscription is already active
   if (designerProfile.subActive && designerProfile.paystackSubscriptionCode) {
     throw ApiError.badRequest("Subscription already active");
   }
 
-  if (!designerProfile.trialStart) {
-    // Start 14-day free trial
+  // Handle trial subscription
+  if (plan === "trial") {
+    if (designerProfile.trialStart) {
+      throw ApiError.badRequest("Trial already used or active");
+    }
     const now = new Date();
     designerProfile.trialStart = now;
     designerProfile.trialEnd = new Date(
@@ -35,15 +40,14 @@ export const handleSubscription = catchAsync(async (req, res) => {
     designerProfile.subscriptionPlan = "trial";
     designerProfile.subActive = true;
     await designerProfile.save();
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "14-day free trial started",
-        data: designerProfile,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "14-day free trial started",
+      data: designerProfile,
+    });
   }
 
+  // Handle paid subscriptions
   const planConfig = {
     monthly: { name: "Monthly Plan", interval: "monthly", amount: 5000 },
     biannual: { name: "Biannual Plan", interval: "biannually", amount: 25000 },
