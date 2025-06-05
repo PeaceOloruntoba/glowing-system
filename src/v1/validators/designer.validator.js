@@ -10,7 +10,7 @@ export const designerValidator = [
 
   body("phoneNumber")
     .exists()
-    .withMessage("Full name is required")
+    .withMessage("Business Phone number is required")
     .isLength(11)
     .withMessage("Please provide a valid phone number"),
 
@@ -25,12 +25,6 @@ export const designerValidator = [
     .withMessage("Business Address is required")
     .isString()
     .withMessage("Business Address must be a string"),
-
-  body("state")
-    .exists()
-    .withMessage("Your state is required")
-    .isString()
-    .withMessage("Your state must be a string"),
 
   body("bank")
     .exists()
