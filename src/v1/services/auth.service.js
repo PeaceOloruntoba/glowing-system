@@ -135,7 +135,7 @@ export default {
     if (!userProfile.isVerified) {
       throw ApiError.forbidden("Email Not Verified");
     }
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, email);
     return {
       success: true,
       status_code: 200,
