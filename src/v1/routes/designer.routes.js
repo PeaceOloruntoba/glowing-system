@@ -65,7 +65,12 @@ router
   .all(methodNotAllowed);
 router
   .route("/designerProduct")
-  .get(isAuth, checkSubscription, getProductsByDesigner)
+  .get(
+    isAuth,
+    checkDesignerRegistration,
+    checkSubscription,
+    getProductsByDesigner
+  )
   .all(methodNotAllowed);
 router
   .route("/product/:productId")
