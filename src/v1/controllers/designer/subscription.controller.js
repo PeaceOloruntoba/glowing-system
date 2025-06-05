@@ -10,7 +10,7 @@ export const getSubscriptionPlans = catchAsync(async (req, res) => {
 
 export const handleSubscription = catchAsync(async (req, res) => {
   const { userId, email } = req.user;
-  const { plan } = req.body; // "monthly", "biannual", "annual"
+  const { plan } = req.body; // "monthly", "biannual", "annual", "trial"
 
   if (!["monthly", "biannual", "annual"].includes(plan)) {
     throw ApiError.badRequest("Invalid subscription plan");
