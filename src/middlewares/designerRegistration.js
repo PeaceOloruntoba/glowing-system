@@ -15,6 +15,5 @@ export const checkDesignerRegistration = async (req, res, next) => {
       message:"Complete your designer registration to access this feature."
     })
   }
-  console.log("Through");
   next();
 };
